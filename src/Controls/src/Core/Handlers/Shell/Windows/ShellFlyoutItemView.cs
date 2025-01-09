@@ -128,7 +128,7 @@ namespace Microsoft.Maui.Controls.Platform
 
 		protected override global::Windows.Foundation.Size ArrangeOverride(global::Windows.Foundation.Size finalSize)
 		{
-			if (this.ActualWidth > 0 && _content is IView view)
+			if (finalSize.Width > 0 && _content is IView view)
 			{
 				view.Arrange(new Rect(0, 0, finalSize.Width, finalSize.Height));
 				return finalSize;
