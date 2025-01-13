@@ -451,8 +451,11 @@ namespace Microsoft.Maui.Platform
 				{
 					AppTitleBarContentControl.Content = null;
 					if (AppTitleBarContentControl.ContentTemplateSelector is null)
-						AppTitleBarContentControl.ContentTemplateSelector = previousDataTemplateSelector;
-					previousDataTemplateSelector = null;
+					{
+						AppTitleBarContentControl.ContentTemplateSelector =
+							(DataTemplateSelector)Application.Current.Resources["MauiAppTitleBarTemplateSelector"];
+						AppTitleBarContentControl.ApplyTemplate();
+					}
 				}
 				return;
 			}
