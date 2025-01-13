@@ -145,11 +145,8 @@ namespace Microsoft.Maui.Platform
 			set => _rootView.WindowTitle = value;
 		}
 
-		internal void SetTitle(string? title)
-		{
-			_rootView.WindowTitle = title;
-			UpdateAppTitleBarTemplate();
-		}
+		internal void SetTitle(string? title) =>
+			_rootView.SetTitle(title);
 
 		internal void SetTitleBar(ITitleBar? titlebar, IMauiContext? mauiContext)
 		{
