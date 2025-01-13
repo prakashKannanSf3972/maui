@@ -113,12 +113,12 @@ namespace Microsoft.Maui.Platform
 		public virtual void Disconnect()
 		{
 			_rootView.OnWindowTitleBarContentSizeChanged -= WindowRootViewOnWindowTitleBarContentSizeChanged;
-      
+
 			if (_platformWindow.TryGetTarget(out var platformWindow))
 			{
 				platformWindow.Activated -= OnWindowActivated;
 			}
-      
+
 			SetToolbar(null);
 			SetTitleBar(null, null);
 
@@ -145,13 +145,16 @@ namespace Microsoft.Maui.Platform
 			set => _rootView.WindowTitle = value;
 		}
 
-		internal void SetTitle(string? title) =>
+		internal void SetTitle(string? title)
+		{
 			_rootView.WindowTitle = title;
+			UpdateAppTitleBarTemplate();
+		}
 
 		internal void SetTitleBar(ITitleBar? titlebar, IMauiContext? mauiContext)
 		{
 			if (_platformWindow.TryGetTarget(out var window))
-			{ 
+			{
 				_rootView.AppWindowId = window.GetAppWindow()?.Id;
 				_rootView.SetTitleBar(titlebar, mauiContext);
 			}
