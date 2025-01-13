@@ -146,7 +146,7 @@ namespace Microsoft.Maui.Platform
 		}
 
 		internal void SetTitle(string? title) =>
-			_rootView.SetTitle(title);
+			_rootView.WindowTitle = title;
 
 		internal void SetTitleBar(ITitleBar? titlebar, IMauiContext? mauiContext)
 		{
