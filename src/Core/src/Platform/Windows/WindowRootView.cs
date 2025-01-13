@@ -36,6 +36,7 @@ namespace Microsoft.Maui.Platform
 		bool _hasTitleBarImage;
 		ViewManagement.UISettings _viewSettings;
 		public event TypedEventHandler<NavigationView, NavigationViewBackRequestedEventArgs>? BackRequested;
+		DataTemplateSelector? previousDataTemplateSelector;
 
 		public WindowRootView()
 		{
@@ -275,6 +276,7 @@ namespace Microsoft.Maui.Platform
 		{
 			if (WindowTitleBarContent is not null && AppTitleBarContentControl is not null)
 			{
+				previousDataTemplateSelector = AppTitleBarContentControl.ContentTemplateSelector;
 				AppTitleBarContentControl.ContentTemplateSelector = null;
 				AppTitleBarContentControl.Content = WindowTitleBarContent;
 			}
@@ -448,6 +450,9 @@ namespace Microsoft.Maui.Platform
 				if (AppTitleBarContentControl is not null)
 				{
 					AppTitleBarContentControl.Content = null;
+					if (AppTitleBarContentControl.ContentTemplateSelector is null)
+						AppTitleBarContentControl.ContentTemplateSelector = previousDataTemplateSelector;
+					previousDataTemplateSelector = null;
 				}
 				return;
 			}
@@ -465,6 +470,7 @@ namespace Microsoft.Maui.Platform
 				// Override the template selector and content
 				if (AppTitleBarContentControl is not null)
 				{
+					previousDataTemplateSelector = AppTitleBarContentControl.ContentTemplateSelector;
 					AppTitleBarContentControl.ContentTemplateSelector = null;
 					AppTitleBarContentControl.Content = WindowTitleBarContent;
 				}
