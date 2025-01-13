@@ -448,7 +448,6 @@ namespace Microsoft.Maui.Platform
 				if (AppTitleBarContentControl is not null)
 				{
 					AppTitleBarContentControl.Content = null;
-					UpdateAppTitleBarTemplate();
 				}
 				return;
 			}
@@ -559,18 +558,6 @@ namespace Microsoft.Maui.Platform
 				}
 			}
 			PassthroughTitlebarElements = passthroughElements;
-		}
-
-		internal void UpdateAppTitleBarTemplate()
-		{
-			// Ensure the default Window Title template is reapplied when switching from a TitleBar.
-			// The ContentTemplateSelector is reset to the default when ContentTemplate is null, restoring proper title display.
-			if (AppTitleBarContentControl is not null &&
-				AppTitleBarContentControl.ContentTemplateSelector is null && AppTitleBarContentControl.Content is null)
-			{
-				AppTitleBarContentControl.ContentTemplateSelector =
-				(DataTemplateSelector)Application.Current.Resources["MauiAppTitleBarTemplateSelector"];
-			}
 		}
 
 		static void OnAppTitleBarTemplateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
