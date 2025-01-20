@@ -19,8 +19,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 
 		public bool IsRootPage { get; set; }
 
-		#nullable disable
-		public UIViewController ViewController
+		public UIViewController? ViewController
 		{
 			get
 			{
@@ -43,7 +42,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 			}
 		}
 
-		public Page Page
+		public Page? Page
 		{
 			get { return _page; }
 			set
@@ -54,10 +53,9 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 				var oldPage = _page;
 				_page = value;
 
-				OnPageSet(oldPage, _page);
+				OnPageSet(oldPage, value);
 			}
 		}
-		#nullable restore
 
 		#endregion IShellPageRendererTracker
 
@@ -78,9 +76,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 		UINavigationItem? NavigationItem { get; set; }
 		IMauiContext? MauiContext => Page?.FindMauiContext() ?? _context?.Shell.FindMauiContext();
 
-		#nullable disable
 		public ShellPageRendererTracker(IShellContext context)
-		#nullable restore
 		{
 			_context = context;
 			_nSCache = new NSCache();
@@ -95,20 +91,16 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 			UpdateToolbarItemsInternal();
 		}
 
-#nullable disable
-		protected virtual void HandleShellPropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected virtual void HandleShellPropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
-#nullable restore
 			if (e.Is(VisualElement.FlowDirectionProperty))
 				UpdateFlowDirection();
 			else if (e.Is(Shell.FlyoutIconProperty))
 				UpdateLeftToolbarItems();
 		}
 
-#nullable disable
-		protected virtual void OnBackButtonBehaviorPropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected virtual void OnBackButtonBehaviorPropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
-#nullable restore
 			if (e.PropertyName == BackButtonBehavior.CommandParameterProperty.PropertyName)
 			{
 				return;
@@ -124,10 +116,8 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 			UpdateLeftToolbarItems();
 		}
 
-#nullable disable
-		protected virtual void OnPagePropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected virtual void OnPagePropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
-#nullable restore
 			if (e.PropertyName == Shell.BackButtonBehaviorProperty.PropertyName)
 			{
 				SetBackButtonBehavior(Shell.GetBackButtonBehavior(Page));
@@ -208,9 +198,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 			UpdateToolbarItemsInternal();
 		}
 
-#nullable disable
-		protected virtual void OnPageSet(Page oldPage, Page newPage)
-#nullable restore
+		protected virtual void OnPageSet(Page? oldPage, Page? newPage)
 		{
 			if (oldPage is not null)
 			{
@@ -556,9 +544,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 
 		public class TitleViewContainer : UIContainerView
 		{
-			#nullable disable
 			public TitleViewContainer(View view) : base(view)
-			#nullable restore
 			{
 				MatchHeight = true;
 
@@ -648,9 +634,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 			}
 		}
 
-#nullable disable
-		protected virtual void OnSearchHandlerPropertyChanged(object sender, PropertyChangedEventArgs e)
-#nullable restore
+		protected virtual void OnSearchHandlerPropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
 			if (_searchHandler is null || _searchController is null)
 				return;
