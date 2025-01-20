@@ -22,7 +22,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 
 		public bool IsRootPage { get; set; }
 
-		public UIViewController ViewController
+		public UIViewController? ViewController
 		{
 			get
 			{
@@ -36,7 +36,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 			}
 		}
 
-		public Page Page
+		public Page? Page
 		{
 			get { return _page; }
 			set
@@ -85,7 +85,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 			UpdateToolbarItemsInternal();
 		}
 
-		protected virtual void HandleShellPropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected virtual void HandleShellPropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
 			if (e.Is(VisualElement.FlowDirectionProperty))
 				UpdateFlowDirection();
@@ -93,7 +93,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 				UpdateLeftToolbarItems();
 		}
 
-		protected virtual void OnBackButtonBehaviorPropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected virtual void OnBackButtonBehaviorPropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == BackButtonBehavior.CommandParameterProperty.PropertyName)
 				return;
@@ -108,7 +108,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 			UpdateLeftToolbarItems();
 		}
 
-		protected virtual void OnPagePropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected virtual void OnPagePropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Shell.BackButtonBehaviorProperty.PropertyName)
 			{
@@ -145,7 +145,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 			ViewController.HidesBottomBarWhenPushed = !tabBarVisible;
 		}
 
-		void OnToolbarPropertyChanged(object sender, PropertyChangedEventArgs e)
+		void OnToolbarPropertyChanged(object? sender, PropertyChangedEventArgs e)
 		{
 			if (!ToolbarReady())
 				return;
@@ -190,7 +190,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 			UpdateToolbarItemsInternal();
 		}
 
-		protected virtual void OnPageSet(Page oldPage, Page newPage)
+		protected virtual void OnPageSet(Page? oldPage, Page? newPage)
 		{
 			if (oldPage != null)
 			{
@@ -486,7 +486,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 			return img;
 		}
 
-		void OnToolbarItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
+		void OnToolbarItemsChanged(object? sender, NotifyCollectionChangedEventArgs e)
 		{
 			UpdateToolbarItemsInternal();
 		}

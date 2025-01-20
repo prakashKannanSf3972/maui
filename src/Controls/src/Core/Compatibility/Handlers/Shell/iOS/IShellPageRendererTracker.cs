@@ -1,6 +1,5 @@
-#nullable disable
+#nullable enable // https://github.com/dotnet/maui/issues/27162
 using System;
-using ObjCRuntime;
 using UIKit;
 
 namespace Microsoft.Maui.Controls.Platform.Compatibility
@@ -9,8 +8,8 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 	{
 		bool IsRootPage { get; set; }
 
-		UIViewController ViewController { get; set; }
+		UIViewController? ViewController { get; set; }
 
-		Page Page { get; set; }
+		Page? Page { get; set; }
 	}
 }

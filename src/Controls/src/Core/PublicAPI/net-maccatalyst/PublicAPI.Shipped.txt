@@ -4346,7 +4346,7 @@
 ~virtual Microsoft.Maui.Controls.Platform.Compatibility.ShellPageRendererTracker.HandleShellPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) -> void
 ~virtual Microsoft.Maui.Controls.Platform.Compatibility.ShellPageRendererTracker.OnBackButtonBehaviorPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) -> void
 ~virtual Microsoft.Maui.Controls.Platform.Compatibility.ShellPageRendererTracker.OnPagePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) -> void
-~virtual Microsoft.Maui.Controls.Platform.Compatibility.ShellPageRendererTracker.OnPageSet(Microsoft.Maui.Controls.Page oldPage, Microsoft.Maui.Controls.Page newPage) -> void
+~virtual Microsoft.Maui.Controls.Platform.Compatibility.ShellPageRendererTracker.OnPageSet(Microsoft.Maui.Controls.Page? oldPage, Microsoft.Maui.Controls.Page? newPage) -> void
 ~virtual Microsoft.Maui.Controls.Platform.Compatibility.ShellPageRendererTracker.OnSearchHandlerPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) -> void
 ~virtual Microsoft.Maui.Controls.Platform.Compatibility.ShellPageRendererTracker.RemoveSearchController(UIKit.UINavigationItem navigationItem) -> void
 ~virtual Microsoft.Maui.Controls.Platform.Compatibility.ShellPageRendererTracker.UpdateSearchIsEnabled(UIKit.UISearchController searchController) -> void
