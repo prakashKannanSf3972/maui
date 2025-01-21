@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace Microsoft.Maui.Controls
 {
@@ -12,6 +13,17 @@ namespace Microsoft.Maui.Controls
 				handler
 					?.GetService<HideSoftInputOnTappedChangedManager>()
 					?.UpdateFocusForView(iv);
+			}
+		}
+
+		internal static void MapIsVisible(IViewHandler handler, IView view)
+		{
+			if (view is not InputView inputView || handler?.PlatformView == null)
+				return;
+
+			if (!inputView.IsVisible && inputView.IsSoftInputShowing())
+			{
+				inputView.HideSoftInputAsync(CancellationToken.None);
 			}
 		}
 #endif
