@@ -106,28 +106,12 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 		void UpdateEmptyViewSize(double width, double height)
 		{
 			var adapter = PlatformView.GetAdapter();
-
 			if (adapter is EmptyViewAdapter emptyViewAdapter)
 			{
-				var emptyView = emptyViewAdapter.EmptyView ?? emptyViewAdapter.EmptyViewTemplate;
-				Size size = Size.Zero;
-
-				IView view = emptyView as IView ?? (emptyView as DataTemplate)?.CreateContent() as IView;
-
-				if (view is not null)
-				{
-					if (view.Handler is null)
-					{
-						TemplateHelpers.GetHandler(view as View, this.MauiContext);
-					}
-
-					size = view.Measure(double.PositiveInfinity, double.PositiveInfinity);
-				}
-
-				var measuredHeight = !double.IsInfinity(size.Height) ? Context.ToPixels(size.Height) : height;
+				emptyViewAdapter.RecyclerViewHeight = height;
 				emptyViewAdapter.RecyclerViewWidth = width;
-				emptyViewAdapter.RecyclerViewHeight = measuredHeight > 0 ? measuredHeight : height;
 			}
+
 		}
 	}
 }
