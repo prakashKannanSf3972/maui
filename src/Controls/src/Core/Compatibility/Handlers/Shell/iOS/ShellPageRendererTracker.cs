@@ -346,6 +346,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 			image.LoadImage(MauiContext, result =>
 			{
 				UIImage icon = null;
+				bool isDefaultHamburger = false;
 
 				if (image != null)
 				{
@@ -354,10 +355,17 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 				else if (String.IsNullOrWhiteSpace(text) && IsRootPage && _flyoutBehavior == FlyoutBehavior.Flyout)
 				{
 					icon = DrawHamburger();
+					isDefaultHamburger = true;
 				}
 
 				if (icon != null)
 				{
+					var foregroundColor = _context.Shell.GetValue(Shell.ForegroundColorProperty);
+					if (!isDefaultHamburger && foregroundColor is null)
+					{
+						icon = icon.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal);
+					}
+
 					NavigationItem.LeftBarButtonItem =
 						new UIBarButtonItem(icon, UIBarButtonItemStyle.Plain, (s, e) => LeftBarButtonItemHandler(ViewController, IsRootPage)) { Enabled = enabled };
 				}
