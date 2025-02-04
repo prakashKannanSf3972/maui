@@ -89,7 +89,7 @@ namespace Microsoft.Maui.Controls.Platform.Compatibility
 		{
 			if (e.Is(VisualElement.FlowDirectionProperty))
 				UpdateFlowDirection();
-			else if (e.Is(Shell.FlyoutIconProperty))
+			else if (e.Is(Shell.FlyoutIconProperty) || e.Is(Shell.ForegroundColorProperty))
 				UpdateLeftToolbarItems();
 		}
 
