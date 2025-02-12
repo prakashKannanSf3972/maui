@@ -21,6 +21,8 @@ namespace Microsoft.Maui.Controls.Platform
 		FrameworkElement? _container;
 		FrameworkElement? _control;
 		VisualElement? _element;
+		DragGestureRecognizer? dragGesture;
+		DropGestureRecognizer? dropGesture;
 
 		SubscriptionFlags _subscriptionFlags = SubscriptionFlags.None;
 
@@ -380,6 +382,12 @@ namespace Microsoft.Maui.Controls.Platform
 				return;
 
 			ClearContainerEventHandlers();
+
+			if (dragGesture is not null)
+				dragGesture.PropertyChanged -= HandleDragAndDropGesturePropertyChanged;
+
+			if (dropGesture is not null)
+				dropGesture.PropertyChanged -= HandleDragAndDropGesturePropertyChanged;
 
 			if (_element != null)
 			{
@@ -755,6 +763,15 @@ namespace Microsoft.Maui.Controls.Platform
 			ClearContainerEventHandlers();
 			UpdateDragAndDropGestureRecognizers();
 
+			dragGesture = ElementGestureRecognizers.FirstGestureOrDefault<DragGestureRecognizer>();
+			dropGesture = ElementGestureRecognizers.FirstGestureOrDefault<DropGestureRecognizer>();
+
+			if (dragGesture is not null)
+				dragGesture.PropertyChanged += HandleDragAndDropGesturePropertyChanged;
+
+			if (dropGesture is not null)
+				dropGesture.PropertyChanged += HandleDragAndDropGesturePropertyChanged;
+
 			var children = (view as IGestureController)?.GetChildElements(Point.Zero);
 
 			if (gestures.HasAnyGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 1)
@@ -843,6 +860,16 @@ namespace Microsoft.Maui.Controls.Platform
 			var package = e.DataView.Properties[_doNotUsePropertyString] as DataPackage;
 
 			return new DragEventArgs(package!, (relativeTo) => GetPosition(relativeTo, e), platformArgs);
+		}
+
+		void HandleDragAndDropGesturePropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == DragGestureRecognizer.CanDragProperty.PropertyName ||
+				e.PropertyName == DropGestureRecognizer.AllowDropProperty.PropertyName)
+			{
+				ClearContainerEventHandlers();
+				UpdateDragAndDropGestureRecognizers();
+			}
 		}
 
 		[Flags]
