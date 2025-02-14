@@ -10,7 +10,7 @@
 			Label dragResult = new Label();
 			Label dropResult = new Label();
 
-			DragGestureRecognizer dragGestureRecognizer = new DragGestureRecognizer { CanDrag = true };
+			DragGestureRecognizer dragGestureRecognizer = new DragGestureRecognizer { CanDrag = false };
 			BoxView dragBox = new BoxView
 			{
 				HeightRequest = 200,
@@ -21,7 +21,7 @@
 			};
 			dragGestureRecognizer.DragStarting += (_, __) => dragResult.Text = "DragEventTriggered";
 
-			DropGestureRecognizer dropGestureRecognizer = new DropGestureRecognizer { AllowDrop = true };
+			DropGestureRecognizer dropGestureRecognizer = new DropGestureRecognizer { AllowDrop = false };
 			BoxView dropBox = new BoxView
 			{
 				HeightRequest = 200,
