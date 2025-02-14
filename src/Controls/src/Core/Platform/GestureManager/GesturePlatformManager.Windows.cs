@@ -838,7 +838,7 @@ namespace Microsoft.Maui.Controls.Platform
 			if (dropGesture is not null)
 				dropGesture.PropertyChanged += HandleDragAndDropGesturePropertyChanged;
 
-			if (dragGesture.CanDrag && ((_subscriptionFlags & SubscriptionFlags.ContainerDragEventsSubscribed) == 0))
+			if (dragGesture?.CanDrag && ((_subscriptionFlags & SubscriptionFlags.ContainerDragEventsSubscribed) == 0))
 			{
 				_subscriptionFlags |= SubscriptionFlags.ContainerDragEventsSubscribed;
 
@@ -847,7 +847,7 @@ namespace Microsoft.Maui.Controls.Platform
 				_container.DropCompleted += HandleDropCompleted;
 			}
 
-			if (dropGesture.AllowDrop && ((_subscriptionFlags & SubscriptionFlags.ContainerDropEventsSubscribed) == 0))
+			if (dropGesture?.AllowDrop && ((_subscriptionFlags & SubscriptionFlags.ContainerDropEventsSubscribed) == 0))
 			{
 				_subscriptionFlags |= SubscriptionFlags.ContainerDropEventsSubscribed;
 				
