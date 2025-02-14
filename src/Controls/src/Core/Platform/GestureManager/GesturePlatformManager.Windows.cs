@@ -426,11 +426,11 @@ namespace Microsoft.Maui.Controls.Platform
 
 			ClearContainerEventHandlers();
 
-			if (hasDragGesture is not null)
-				hasDragGesture.PropertyChanged -= HandleDragAndDropGesturePropertyChanged;
+			if (dragGesture is not null)
+				dragGesture.PropertyChanged -= HandleDragAndDropGesturePropertyChanged;
 
-			if (hasDropGesture is not null)
-				hasDropGesture.PropertyChanged -= HandleDragAndDropGesturePropertyChanged;
+			if (dropGesture is not null)
+				dropGesture.PropertyChanged -= HandleDragAndDropGesturePropertyChanged;
 
 			if (_element is View && ElementGestureRecognizers is {} gestureRecognizers)
 			{
