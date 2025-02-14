@@ -1,0 +1,26 @@
+﻿using NUnit.Framework;
+using UITest.Appium;
+using UITest.Core;
+
+namespace Microsoft.Maui.TestCases.Tests.Issues
+{
+	public class Issue12726 : _IssuesUITest
+	{
+		public Issue12726(TestDevice testDevice) : base(testDevice)
+		{
+		}
+
+		public override string Issue => "DragGestureRecognizer CanDrag binding not working properly in Windows";
+
+		[Test]
+		[Category(UITestCategories.DragAndDrop)]
+		public void DragAndDropShouldWorkRunTime()
+		{
+			App.WaitForElement("EnableDragAndDrop");
+			App.Tap("EnableDragAndDrop");
+			App.DragAndDrop("DragBox", "DropBox");
+			App.WaitForElement("DragEventTriggered");
+			App.WaitForElement("DropEventTriggered");
+		}
+	}
+}
