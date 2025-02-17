@@ -11,24 +11,24 @@
 			Label dropResult = new Label();
 
 			DragGestureRecognizer dragGestureRecognizer = new DragGestureRecognizer { CanDrag = false };
-			BoxView dragBox = new BoxView
+			Label dragBox = new Label
 			{
 				HeightRequest = 200,
 				WidthRequest = 200,
 				BackgroundColor = Colors.Purple,
 				GestureRecognizers = { dragGestureRecognizer },
-				AutomationId = "DragBox"
+				AutomationId = "DragElement"
 			};
 			dragGestureRecognizer.DragStarting += (_, __) => dragResult.Text = "DragEventTriggered";
 
 			DropGestureRecognizer dropGestureRecognizer = new DropGestureRecognizer { AllowDrop = false };
-			BoxView dropBox = new BoxView
+			Label dropBox = new Label
 			{
 				HeightRequest = 200,
 				WidthRequest = 200,
 				BackgroundColor = Colors.Pink,
 				GestureRecognizers = { dropGestureRecognizer },
-				AutomationId = "DropBox"
+				AutomationId = "DropTarget"
 			};
 			dropGestureRecognizer.Drop += (_, __) => dropResult.Text = "DropEventTriggered";
 

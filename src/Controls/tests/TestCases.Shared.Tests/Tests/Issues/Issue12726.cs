@@ -18,7 +18,7 @@ namespace Microsoft.Maui.TestCases.Tests.Issues
 		{
 			App.WaitForElement("EnableDragAndDrop");
 			App.Tap("EnableDragAndDrop");
-			App.DragAndDrop("DragBox", "DropBox");
+			App.DragAndDrop("DragElement", "DropTarget");
 			App.WaitForElement("DragEventTriggered");
 			App.WaitForElement("DropEventTriggered");
 		}
