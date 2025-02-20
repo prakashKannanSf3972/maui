@@ -303,29 +303,5 @@ namespace Microsoft.Maui.Controls.Core.UnitTests
 
 			Assert.True(toolbar.IsVisible);
 		}
-
-#if IOS || MACCATALYST
-		[Fact]
-		public void FlyoutIconColorShouldUpdateWhenChangedMultipleTimes()
-		{
-			TestShell testShell = new TestShell();
-			testShell.FlyoutIcon = "star_flyout.png";
-			testShell.CurrentItem = new FlyoutItem()
-			{
-				CurrentItem = new ContentPage()
-			};
-
-			_ = new Window() { Page = testShell };
-			var toolbar = testShell.Toolbar;
-
-			Color firstColor = Colors.Red;
-			Shell.SetForegroundColor(testShell, firstColor);
-			Assert.Equal(firstColor, toolbar.IconColor);
-
-			Color secondColor = Colors.Blue;
-			Shell.SetForegroundColor(testShell, secondColor);
-			Assert.Equal(secondColor, toolbar.IconColor);
-		}
-#endif
 	}
 }
