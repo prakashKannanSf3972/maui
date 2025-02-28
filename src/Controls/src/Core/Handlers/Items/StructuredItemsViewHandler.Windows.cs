@@ -104,8 +104,8 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 
 			if (_currentHeader != null)
 			{
-				Element.RemoveLogicalChild(_currentHeader);
 				_currentHeader = null;
+				ListViewBase.Header = null;
 			}
 
 			var header = ItemsView.Header ?? ItemsView.HeaderTemplate;
@@ -122,10 +122,8 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 					break;
 
 				case View view:
-					ListViewBase.HeaderTemplate = ViewTemplate;
 					_currentHeader = view;
-					Element.AddLogicalChild(_currentHeader);
-					ListViewBase.Header = view;
+					ListViewBase.Header = CreateContentPresenterForView(_currentHeader);
 					break;
 
 				default:
@@ -153,8 +151,8 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 
 			if (_currentFooter != null)
 			{
-				Element.RemoveLogicalChild(_currentFooter);
 				_currentFooter = null;
+				ListViewBase.Footer = null;
 			}
 
 			var footer = ItemsView.Footer ?? ItemsView.FooterTemplate;
@@ -171,10 +169,8 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 					break;
 
 				case View view:
-					ListViewBase.FooterTemplate = ViewTemplate;
 					_currentFooter = view;
-					Element.AddLogicalChild(_currentFooter);
-					ListViewBase.Footer = view;
+					ListViewBase.Footer = CreateContentPresenterForView(_currentFooter);
 					break;
 
 				default:
@@ -308,6 +304,26 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 						break;
 				}
 			}
+		}
+
+		UI.Xaml.Controls.ContentPresenter CreateContentPresenterForView(View view)
+		{
+			var contentPresenter = new UI.Xaml.Controls.ContentPresenter();
+			var handler = view.Handler;
+			if (handler is null)
+			{
+				handler = view.ToHandler(MauiContext);
+				view.Handler = handler;
+			}
+
+			var platformView = handler?.PlatformView;
+			if (platformView is not null)
+			{
+				contentPresenter.Content = platformView;
+				return contentPresenter;
+			}
+
+			return null;
 		}
 	}
 }
