@@ -585,6 +585,33 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 				SwapAdapter(ItemsViewAdapter, true);
 				UpdateLayoutManager();
 			}
+			else if (showEmptyView)
+			{
+				UpdateEmptyViewAdapter();
+			}
+		}
+
+		void UpdateEmptyViewAdapter()
+		{
+			if (ItemsView is StructuredItemsView structuredItemsView)
+			{
+				if (_emptyViewAdapter.Header != structuredItemsView.Header || _emptyViewAdapter.HeaderTemplate != structuredItemsView.HeaderTemplate)
+				{
+					_emptyViewAdapter.Header = structuredItemsView.Header;
+					_emptyViewAdapter.HeaderTemplate = structuredItemsView.HeaderTemplate;
+				}
+
+				if (_emptyViewAdapter.Footer != structuredItemsView.Footer || _emptyViewAdapter.FooterTemplate != structuredItemsView.FooterTemplate)
+				{
+					_emptyViewAdapter.Footer = structuredItemsView.Footer;
+					_emptyViewAdapter.FooterTemplate = structuredItemsView.FooterTemplate;
+				}
+
+				_emptyViewAdapter.EmptyView = ItemsView?.EmptyView;
+				_emptyViewAdapter.EmptyViewTemplate = ItemsView?.EmptyViewTemplate;
+
+				_emptyViewAdapter.NotifyDataSetChanged();
+			}
 		}
 
 		internal void AdjustScrollForItemUpdate()
