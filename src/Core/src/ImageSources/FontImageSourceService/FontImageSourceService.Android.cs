@@ -26,7 +26,14 @@ namespace Microsoft.Maui
 
 				try
 				{
-					PlatformInterop.LoadImageFromFont(
+					if (imageView.Drawable is BitmapDrawable bitmapDrawable && bitmapDrawable.Bitmap is not null)
+					{
+						PorterDuffColorFilter? colorFilter = new PorterDuffColorFilter(color, PorterDuff.Mode.SrcIn!);
+						bitmapDrawable.SetColorFilter(colorFilter);
+					}
+					else
+					{
+						PlatformInterop.LoadImageFromFont(
 						imageView,
 						color,
 						fontImageSource.Glyph,
