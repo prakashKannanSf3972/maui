@@ -587,30 +587,7 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 			}
 			else if (showEmptyView)
 			{
-				UpdateEmptyViewAdapter();
-			}
-		}
-
-		void UpdateEmptyViewAdapter()
-		{
-			if (ItemsView is StructuredItemsView structuredItemsView)
-			{
-				if (_emptyViewAdapter.Header != structuredItemsView.Header || _emptyViewAdapter.HeaderTemplate != structuredItemsView.HeaderTemplate)
-				{
-					_emptyViewAdapter.Header = structuredItemsView.Header;
-					_emptyViewAdapter.HeaderTemplate = structuredItemsView.HeaderTemplate;
-				}
-
-				if (_emptyViewAdapter.Footer != structuredItemsView.Footer || _emptyViewAdapter.FooterTemplate != structuredItemsView.FooterTemplate)
-				{
-					_emptyViewAdapter.Footer = structuredItemsView.Footer;
-					_emptyViewAdapter.FooterTemplate = structuredItemsView.FooterTemplate;
-				}
-
-				_emptyViewAdapter.EmptyView = ItemsView?.EmptyView;
-				_emptyViewAdapter.EmptyViewTemplate = ItemsView?.EmptyViewTemplate;
-
-				_emptyViewAdapter.NotifyDataSetChanged();
+				UpdateEmptyViewHeaderAndFooterState();
 			}
 		}
 
@@ -657,6 +634,34 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 			RecyclerViewScrollListener.Dispose();
 			ClearOnScrollListeners();
 			RecyclerViewScrollListener = null;
+		}
+
+		void UpdateEmptyViewHeaderAndFooterState()
+		{
+			if (ItemsView is StructuredItemsView structuredItemsView)
+			{
+				bool headerOrFooterChanged = false;
+				if (_emptyViewAdapter.Header != structuredItemsView.Header || _emptyViewAdapter.HeaderTemplate != structuredItemsView.HeaderTemplate)
+				{
+					_emptyViewAdapter.Header = structuredItemsView.Header;
+					_emptyViewAdapter.HeaderTemplate = structuredItemsView.HeaderTemplate;
+					headerOrFooterChanged = true;
+				}
+
+				if (_emptyViewAdapter.Footer != structuredItemsView.Footer || _emptyViewAdapter.FooterTemplate != structuredItemsView.FooterTemplate)
+				{
+					_emptyViewAdapter.Footer = structuredItemsView.Footer;
+					_emptyViewAdapter.FooterTemplate = structuredItemsView.FooterTemplate;
+					headerOrFooterChanged = true;
+				}
+
+				if (headerOrFooterChanged)
+				{
+					_emptyViewAdapter.EmptyView = ItemsView?.EmptyView;
+					_emptyViewAdapter.EmptyViewTemplate = ItemsView?.EmptyViewTemplate;
+					_emptyViewAdapter.NotifyDataSetChanged();
+				}
+			}
 		}
 	}
 }
