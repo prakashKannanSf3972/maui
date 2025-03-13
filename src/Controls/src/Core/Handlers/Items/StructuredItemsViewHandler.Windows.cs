@@ -105,6 +105,7 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 			if (_currentHeader != null)
 			{
 				_currentHeader = null;
+				_currentHeader.Cleanup();
 				ListViewBase.Header = null;
 			}
 
@@ -152,6 +153,7 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 			if (_currentFooter != null)
 			{
 				_currentFooter = null;
+				_currentFooter.Cleanup();
 				ListViewBase.Footer = null;
 			}
 
