@@ -17,10 +17,8 @@ public class Issue27959 : _IssuesUITest
 	[Category(UITestCategories.CollectionView)]
 	public void HeaderFooterToggleNullToNonNull()
 	{
-		App.WaitForElement("CollectionViewButton");
-		App.Click("CollectionViewButton");
-		App.WaitForElement("CollectionView");
-		App.Click("ToggleHeaderButton");
+		App.WaitForElement("EmptyViewButton").Click();
+		App.WaitForElement("ToggleHeaderButton").Click();
 		App.WaitForNoElement("Header");
 		App.Click("ToggleHeaderButton");
 		App.WaitForElement("Header");
@@ -28,19 +26,34 @@ public class Issue27959 : _IssuesUITest
 		App.WaitForNoElement("Footer");
 		App.Click("ToggleFooterButton");
 		App.WaitForElement("Footer");
+		App.Back();
 	}
 
 	[Test, Order(2)]
 	[Category(UITestCategories.CollectionView)]
 	public void TemplateHeaderFooterToggleNullToNonNull()
 	{
-		App.WaitForElement("CollectionViewTemplatedButton");
-		App.Click("CollectionViewTemplatedButton");
-		App.WaitForElement("CollectionViewTemplate");
-		App.Click("ToggleHeaderTemplateButton");
+		App.WaitForElement("EmptyViewViewTemplatedButton").Click();
+		App.WaitForElement("ToggleHeaderTemplateButton").Click();
 		App.WaitForNoElement("HeaderTemplate");
 		App.Click("ToggleHeaderTemplateButton");
 		App.WaitForElement("HeaderTemplate");
+		App.Back();
+	}
+
+	[Test, Order(3)]
+	[Category(UITestCategories.CollectionView)]
+	public void ItemsViewHeaderFooterToggleNullToNonNull()
+	{
+		App.WaitForElement("ItemsViewTemplatedButton").Click();
+		App.WaitForElement("ToggleHeaderTemplateButton").Click();
+		App.WaitForNoElement("ItemsHeaderTemplate");
+		App.Click("ToggleHeaderTemplateButton");
+		App.WaitForElement("ItemsHeaderTemplate");
+		App.Click("ToggleFooterTemplateButton");
+		App.WaitForNoElement("ItemsFooterTemplate");
+		App.Click("ToggleFooterTemplateButton");
+		App.WaitForElement("ItemsFooterTemplate");
 	}
 }
 #endif

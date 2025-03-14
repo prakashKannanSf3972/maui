@@ -20,18 +20,21 @@ public class Issue27959_NavigationPage : TestNavigationPage
 			Padding = new Thickness(10),
 		};
 
-		Button collectionViewButton = new Button() { Text = "CollectionView Header/Footer Toggle", AutomationId = "CollectionViewButton" };
-		collectionViewButton.Clicked += (s, e) => Navigation.PushAsync(new Issue27959_View());
-		Button collectionViewTemplatedButton = new Button() { Text = "CollectionViewTemplated Header/Footer Toggle", AutomationId = "CollectionViewTemplatedButton" };
-		collectionViewTemplatedButton.Clicked += (s, e) => Navigation.PushAsync(new Issue27959_TemplatedView());
+		Button collectionViewButton = new Button() { Text = "EmptyView Header/Footer Toggle", AutomationId = "EmptyViewButton" };
+		collectionViewButton.Clicked += (s, e) => Navigation.PushAsync(new Issue27959_EmptyViewHeaderFooter());
+		Button collectionViewTemplatedButton = new Button() { Text = "EmptyViewTemplated  Header/Footer Toggle", AutomationId = "EmptyViewViewTemplatedButton" };
+		collectionViewTemplatedButton.Clicked += (s, e) => Navigation.PushAsync(new Issue27959_EmptyViewTemplatedHeaderFooterTemplated());
+		Button collectionItemsViewTemplatedButton = new Button() { Text = "ItemsViewTemplated Header/Footer Toggle", AutomationId = "ItemsViewTemplatedButton" };
+		collectionItemsViewTemplatedButton.Clicked += (s, e) => Navigation.PushAsync(new Issue27959_ItemsHeaderFooterTemplatedView());
 		rootLayout.Add(collectionViewButton);
 		rootLayout.Add(collectionViewTemplatedButton);
+		rootLayout.Add(collectionItemsViewTemplatedButton);
 		ContentPage.Content = rootLayout;
 		return ContentPage;
 	}
 }
 
-public class Issue27959_View : TestContentPage
+public class Issue27959_EmptyViewHeaderFooter : TestContentPage
 {
 	CollectionView _collectionView;
 	object _storedHeader;
@@ -63,6 +66,7 @@ public class Issue27959_View : TestContentPage
 			Text = "Toggle Footer"
 		};
 		_toggleFooterButton.Clicked += ToggleFooter;
+
 
 		HorizontalStackLayout buttonsLayout = new HorizontalStackLayout
 		{
@@ -138,7 +142,7 @@ public class Issue27959_View : TestContentPage
 	}
 }
 
-public class Issue27959_TemplatedView : TestContentPage
+public class Issue27959_EmptyViewTemplatedHeaderFooterTemplated : TestContentPage
 {
 	CollectionView _templatedCollectionView;
 	DataTemplate _storedHeaderTemplate;
@@ -244,5 +248,93 @@ public class Issue27959_TemplatedView : TestContentPage
 		{
 			_templatedCollectionView.FooterTemplate = null;
 		}
+	}
+}
+
+public class Issue27959_ItemsHeaderFooterTemplatedView : TestContentPage
+{
+	CollectionView _collectionView;
+	DataTemplate _savedHeaderTemplate;
+	DataTemplate _savedFooterTemplate;
+
+	protected override void Init()
+	{
+		Title = "Items Header/Footer Templated View";
+
+		var layoutGrid = new Grid
+		{
+			RowDefinitions =
+			{
+				new RowDefinition { Height = GridLength.Auto },
+				new RowDefinition { Height = GridLength.Star }
+			}
+		};
+
+		var headerButton = new Button
+		{
+			AutomationId = "ToggleHeaderTemplateButton",
+			Text = "Toggle HeaderTemplate"
+		};
+		headerButton.Clicked += ToggleHeader;
+
+		var footerButton = new Button
+		{
+			AutomationId = "ToggleFooterTemplateButton",
+			Text = "Toggle FooterTemplate"
+		};
+		footerButton.Clicked += ToggleFooter;
+
+		var buttonsLayout = new HorizontalStackLayout
+		{
+			Padding = 20,
+			HorizontalOptions = LayoutOptions.Center,
+			Spacing = 20,
+			Children = { headerButton, footerButton }
+		};
+
+		layoutGrid.Add(buttonsLayout, 0, 0);
+
+		_collectionView = new CollectionView
+		{
+			AutomationId = "CollectionViewTemplate",
+			HeaderTemplate = new DataTemplate(() => new Label
+			{
+				Padding = 10,
+				FontAttributes = FontAttributes.Bold,
+				FontSize = 24,
+				Text = "This Is A HeaderTemplate",
+				AutomationId = "ItemsHeaderTemplate"
+			}),
+
+			ItemsSource = new List<string> { "Item 1", "Item 2", "Item 3" },
+
+			FooterTemplate = new DataTemplate(() => new Label
+			{
+				Padding = 10,
+				FontAttributes = FontAttributes.Bold,
+				FontSize = 24,
+				Text = "This Is A FooterTemplate",
+				AutomationId = "ItemsFooterTemplate"
+			})
+		};
+
+		layoutGrid.Add(_collectionView, 0, 1);
+		Content = layoutGrid;
+	}
+
+	void ToggleHeader(object sender, EventArgs e)
+	{
+		_savedHeaderTemplate = _collectionView.HeaderTemplate ?? _savedHeaderTemplate;
+		_collectionView.HeaderTemplate = _collectionView.HeaderTemplate == null
+			? _savedHeaderTemplate
+			: null;
+	}
+
+	void ToggleFooter(object sender, EventArgs e)
+	{
+		_savedFooterTemplate = _collectionView.FooterTemplate ?? _savedFooterTemplate;
+		_collectionView.FooterTemplate = _collectionView.FooterTemplate == null
+			? _savedFooterTemplate
+			: null;
 	}
 }
