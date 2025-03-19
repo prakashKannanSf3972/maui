@@ -317,6 +317,12 @@ namespace Microsoft.Maui.Controls.Platform
 			var width = ItemWidth == default ? availableSize.Width : ItemWidth;
 			var height = ItemHeight == default ? availableSize.Height : ItemHeight;
 
+			Thickness margin = _handler.VirtualView?.Margin ?? new Thickness(0);
+			if (Content is FrameworkElement frameWorkElement)
+			{
+				frameWorkElement.Margin = WinUIHelpers.CreateThickness(margin.Left, margin.Top, margin.Right, margin.Bottom);
+			}
+
 			// I realize if ItemWidth and ItemHeight are set that this call seems pointless, but it's not.
 			// From what I can tell, calling `base.MeasureOverride` causes the `ContentControl` to realize its content
 			// and build its visual tree. So, in order to just play nice with the WinUI `ContentControl` we always
