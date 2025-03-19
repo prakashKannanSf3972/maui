@@ -101,6 +101,22 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 			return preferredAttributes;
 		}
 
+		public override void LayoutSubviews()
+		{
+			base.LayoutSubviews();
+
+			if (PlatformHandler?.VirtualView is not null)
+			{
+				var margin = PlatformHandler.VirtualView.Margin;
+				var frameWithMargin = new CGRect(
+					margin.Left, margin.Top,
+					Bounds.Width - margin.HorizontalThickness, Bounds.Height
+					- margin.VerticalThickness);
+
+				PlatformHandler.VirtualView.Arrange(frameWithMargin.ToRectangle());
+			}
+		}
+
 		public override void PrepareForReuse()
 		{
 			//Unbind();
