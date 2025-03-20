@@ -189,12 +189,12 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 			//(handler.Controller as StructuredItemsViewController2<ReorderableItemsView>)?.UpdateFooterView();
 		}
 
-		private static void MapGroupFooterTemplate(CollectionViewHandler2 handler, CollectionView view)
+		internal static void MapGroupFooterTemplate(CollectionViewHandler2 handler, CollectionView view)
 		{
 			handler.UpdateLayout();
 		}
 
-		private static void MapGroupHeaderTemplate(CollectionViewHandler2 handler, CollectionView view)
+		internal static void MapGroupHeaderTemplate(CollectionViewHandler2 handler, CollectionView view)
 		{
 			handler.UpdateLayout();
 		}
