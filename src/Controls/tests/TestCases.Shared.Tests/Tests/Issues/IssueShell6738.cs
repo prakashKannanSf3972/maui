@@ -28,8 +28,13 @@ namespace Microsoft.Maui.TestCases.Tests.Issues
 		public void EnsureFlyoutIconWithForegroundColor()
 		{
 			App.WaitForElement("IconColorChangeButton");
-			App.Tap("IconColorChangeButton");
-			VerifyScreenshot();
+            App.Tap("IconColorChangeButton");
+            App.WaitForElement("IconColorChangeButton");
+            VerifyScreenshot();
+            App.WaitForElement("IconColorDefaultButton");
+            App.Tap("IconColorDefaultButton");
+            App.WaitForElement("IconColorDefaultButton");
+            VerifyScreenshot("EnsureFlyoutIconWithForegroundColor_DefaultIconColor");
 		}
 	}
 }
