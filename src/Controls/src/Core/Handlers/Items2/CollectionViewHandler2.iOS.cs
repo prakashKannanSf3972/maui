@@ -56,8 +56,8 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 			[StructuredItemsView.FooterTemplateProperty.PropertyName] = MapFooterTemplate,
 			[StructuredItemsView.HeaderProperty.PropertyName] = MapHeaderTemplate,
 			[StructuredItemsView.FooterProperty.PropertyName] = MapFooterTemplate,
-			[GroupableItemsView.GroupHeaderTemplateProperty.PropertyName] = MapGroupHeaderTemplate,
-			[GroupableItemsView.GroupFooterTemplateProperty.PropertyName] = MapGroupFooterTemplate,
+			[GroupableItemsView.GroupHeaderTemplateProperty.PropertyName] = MapHeaderTemplate,
+			[GroupableItemsView.GroupFooterTemplateProperty.PropertyName] = MapFooterTemplate,
 		};
 	}
 
@@ -187,16 +187,6 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 		{
 			handler.UpdateLayout();
 			//(handler.Controller as StructuredItemsViewController2<ReorderableItemsView>)?.UpdateFooterView();
-		}
-
-		internal static void MapGroupFooterTemplate(CollectionViewHandler2 handler, CollectionView view)
-		{
-			handler.UpdateLayout();
-		}
-
-		internal static void MapGroupHeaderTemplate(CollectionViewHandler2 handler, CollectionView view)
-		{
-			handler.UpdateLayout();
 		}
 
 		public static void MapItemsLayout(CollectionViewHandler2 handler, StructuredItemsView itemsView)
