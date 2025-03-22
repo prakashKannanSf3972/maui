@@ -120,6 +120,16 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 
 		void BindVirtualView(View virtualView, object bindingContext, ItemsView itemsView, bool needsContainer)
 		{
+			var oldElement = PlatformHandler?.VirtualView as View;
+
+			if (oldElement is not null)
+			{
+				oldElement.BindingContext = null;
+				itemsView.RemoveLogicalChild(oldElement);
+				PlatformHandler = null;
+				PlatformView?.RemoveFromSuperview();
+			}
+
 			if (PlatformHandler is null && virtualView is not null)
 			{
 				var mauiContext = itemsView.FindMauiContext()!;
