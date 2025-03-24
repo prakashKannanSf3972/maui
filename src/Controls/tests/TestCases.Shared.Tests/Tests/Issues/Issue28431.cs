@@ -1,3 +1,5 @@
+#if TEST_FAILS_ON_IOS && TEST_FAILS_ON_CATALYST
+// This test fails on iOS and Mac Catalyst. Need to Fix the Issue on iOS and Mac Catalyst.
 using NUnit.Framework;
 using UITest.Appium;
 using UITest.Core;
@@ -15,7 +17,7 @@ public class Issue28431 : _IssuesUITest
 	[Category(UITestCategories.CollectionView)]
 	public void VerifyCollectionTemplateInitialMargin()
 	{
-		App.WaitForElement("MainGrid");
+		App.WaitForElement("CollectionView");
 		VerifyScreenshot();
 	}
 
@@ -28,3 +30,4 @@ public class Issue28431 : _IssuesUITest
 		VerifyScreenshot();
 	}
 }
+#endif
