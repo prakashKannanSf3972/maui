@@ -317,9 +317,9 @@ namespace Microsoft.Maui.Controls.Platform
 			var width = ItemWidth == default ? availableSize.Width : ItemWidth;
 			var height = ItemHeight == default ? availableSize.Height : ItemHeight;
 
-			Thickness margin = _handler.VirtualView?.Margin ?? new Thickness(0);
 			if (Content is FrameworkElement frameWorkElement)
 			{
+				Thickness margin = _handler.VirtualView?.Margin ?? new Thickness(0);
 				frameWorkElement.Margin = WinUIHelpers.CreateThickness(margin.Left, margin.Top, margin.Right, margin.Bottom);
 			}
 
