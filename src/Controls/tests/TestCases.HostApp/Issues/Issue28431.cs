@@ -1,124 +1,110 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
-namespace Maui.Controls.Sample.Issues;
-
-[Issue(IssueTracker.Github, 28431, "In the template of CollectionView, the margin settings of the table are displayed inconsistently", PlatformAffected.UWP)]
-public class Issue28431 : ContentPage
+namespace Maui.Controls.Sample.Issues
 {
-	private readonly ProductsViewModel _viewModel = new();
-
-	public Issue28431()
+	public class Issue28431 : ContentPage
 	{
-		BindingContext = _viewModel;
+		ObservableCollection<Issue28431ViewItem> Items;
 
-		Content = CreateLayout();
-	}
-
-	private Grid CreateLayout()
-	{
-		Grid mainGrid = new Grid
+		public Issue28431()
 		{
-			AutomationId = "MainGrid",
-			RowDefinitions =
+			Items = new ObservableCollection<Issue28431ViewItem>
+			{
+				new Issue28431ViewItem { Name = "UltraWidget", Margin = new Thickness(20) },
+				new Issue28431ViewItem { Name = "ProGadget", Margin = new Thickness(20) },
+				new Issue28431ViewItem { Name = "MaxTool", Margin = new Thickness(20) },
+				new Issue28431ViewItem { Name = "EliteComponent", Margin = new Thickness(20) },
+				new Issue28431ViewItem { Name = "PrimeUtility", Margin = new Thickness(20) }
+			};
+			Content = CreateLayout();
+		}
+
+		Grid CreateLayout()
+		{
+			Grid mainGrid = new Grid
+			{
+				AutomationId = "MainGrid",
+				RowDefinitions =
 			{
 				new RowDefinition { Height = GridLength.Auto },
 				new RowDefinition { Height = GridLength.Star }
 			}
-		};
-
-		Button changeMarginButton = new Button
-		{
-			Text = "Change Margin",
-			AutomationId = "ChangeMargin"
-		};
-		changeMarginButton.Clicked += OnChangeMarginClicked;
-
-		CollectionView collectionView = new CollectionView
-		{
-			AutomationId = "CollectionView",
-			ItemsSource = _viewModel.Products,
-			ItemTemplate = CreateItemTemplate()
-		};
-
-		mainGrid.Add(changeMarginButton, 0, 0);
-		mainGrid.Add(collectionView, 0, 1);
-
-		return mainGrid;
-	}
-
-	private DataTemplate CreateItemTemplate()
-	{
-		return new DataTemplate(() =>
-		{
-			Label label = new Label
-			{
-				FontSize = 20,
-				Margin = new Thickness(10, 0),
-				HorizontalOptions = LayoutOptions.Start,
-				VerticalOptions = LayoutOptions.Center
 			};
-			label.SetBinding(Label.TextProperty, "Name");
 
-			Grid paddingGrid = new Grid();
-			paddingGrid.SetBinding(Grid.MarginProperty, "Margin");
-			paddingGrid.Add(label);
-
-			return paddingGrid;
-		});
-	}
-
-	private void OnChangeMarginClicked(object sender, EventArgs e)
-	{
-		const int newMargin = 60;
-		foreach (var product in _viewModel.Products)
-		{
-			product.Margin = new Thickness(newMargin);
-		}
-	}
-}
-
-public class Product : INotifyPropertyChanged
-{
-	private Thickness _margin = new Thickness(20);
-
-	public string Name { get; set; }
-
-	public Thickness Margin
-	{
-		get => _margin;
-		set
-		{
-			if (_margin != value)
+			Button changeMarginButton = new Button
 			{
-				_margin = value;
-				OnPropertyChanged();
+				Text = "Change Margin",
+				AutomationId = "ChangeMargin"
+			};
+			changeMarginButton.Clicked += OnChangeMarginClicked;
+
+			CollectionView collectionView = new CollectionView
+			{
+				AutomationId = "CollectionView",
+				ItemsSource = Items,
+				ItemTemplate = CreateItemTemplate()
+			};
+
+			mainGrid.Add(changeMarginButton, 0, 0);
+			mainGrid.Add(collectionView, 0, 1);
+
+			return mainGrid;
+		}
+
+		DataTemplate CreateItemTemplate()
+		{
+			return new DataTemplate(() =>
+			{
+				Label label = new Label
+				{
+					FontSize = 20,
+					HorizontalOptions = LayoutOptions.Start,
+					VerticalOptions = LayoutOptions.Center
+				};
+
+				label.SetBinding(Label.TextProperty, nameof(Issue28431ViewItem.Name));
+				label.SetBinding(Label.MarginProperty, nameof(Issue28431ViewItem.Margin));
+
+				return new Grid
+				{
+					Children = { label }
+				};
+			});
+		}
+
+		void OnChangeMarginClicked(object sender, EventArgs e)
+		{
+			foreach (var item in Items)
+			{
+				item.Margin = new Thickness(60);
 			}
 		}
 	}
 
-	public event PropertyChangedEventHandler PropertyChanged;
-
-	protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+	class Issue28431ViewItem : INotifyPropertyChanged
 	{
-		PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-	}
-}
+		public string Name { get; set; }
 
-public class ProductsViewModel
-{
-	public ObservableCollection<Product> Products { get; }
-
-	public ProductsViewModel()
-	{
-		Products = new ObservableCollection<Product>
+		Thickness _margin;
+		public Thickness Margin
 		{
-			new() { Name = "UltraWidget" },
-			new() { Name = "ProGadget" },
-			new() { Name = "MaxTool" },
-			new() { Name = "EliteComponent" },
-			new() { Name = "PrimeUtility" }
-		};
+			get => _margin;
+			set
+			{
+				if (_margin != value)
+				{
+					_margin = value;
+					OnPropertyChanged(nameof(Margin));
+				}
+			}
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		protected void OnPropertyChanged(string propertyName)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
 	}
 }
