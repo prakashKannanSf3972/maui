@@ -16,6 +16,8 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 
 		readonly WeakEventManager _weakEventManager = new();
 
+		internal bool isHeaderOrFooterChanged = false;
+
 		public event EventHandler<EventArgs> ContentSizeChanged
 		{
 			add => _weakEventManager.AddEventHandler(value);
@@ -132,7 +134,7 @@ namespace Microsoft.Maui.Controls.Handlers.Items2
 		{
 			var oldElement = PlatformHandler?.VirtualView as View;
 
-			if (oldElement is not null && oldElement != virtualView)
+			if (oldElement is not null && oldElement != virtualView && isHeaderOrFooterChanged)
 			{
 				oldElement.BindingContext = null;
 				itemsView.RemoveLogicalChild(oldElement);
