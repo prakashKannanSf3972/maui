@@ -18,7 +18,6 @@ public class Issue28536NavigationPage : TestNavigationPage
 				Setters =
 			{
 				new Setter { Property = Picker.TextColorProperty, Value = Colors.Green },
-				new Setter { Property = Picker.TitleColorProperty, Value = Colors.Green },
 				new Setter
 				{
 					Property = VisualStateManager.VisualStateGroupsProperty,
@@ -36,7 +35,6 @@ public class Issue28536NavigationPage : TestNavigationPage
 									Setters =
 									{
 										new Setter { Property = Picker.TextColorProperty, Value = Colors.Red },
-										new Setter { Property = Picker.TitleColorProperty, Value = Colors.Red }
 									}
 								}
 							}
@@ -58,13 +56,14 @@ public class Issue28536NavigationPage : TestNavigationPage
 			Picker picker = new Picker
 			{
 				HorizontalOptions = LayoutOptions.Center,
-				Title = "Assign Style",
+				FontSize = 24,
 				Style = visualStatePickerStyle,
 				ItemsSource = new[]
 				{
-				"Baboon", "Capuchin Monkey", "Blue Monkey", "Squirrel Monkey",
-				"Golden Lion Tamarind", "Howler Monkey", "Japanese Macaque"
+					"Baboon", "Capuchin Monkey", "Blue Monkey", "Squirrel Monkey",
+					"Golden Lion Tamarind", "Howler Monkey", "Japanese Macaque"
 				},
+				SelectedIndex = 1,
 				AutomationId = "VisualStatePicker"
 			};
 
