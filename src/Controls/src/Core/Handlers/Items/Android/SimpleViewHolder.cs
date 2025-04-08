@@ -27,14 +27,13 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 			itemsView.RemoveLogicalChild(View);
 		}
 
-		public static SimpleViewHolder FromText(string text, Context context, bool fill = true)
+		public static SimpleViewHolder FromText(string text, Context context, double width = 0, double height = 0, bool fill = true)
 		{
 			var textView = new TextView(context) { Text = text };
 
 			if (fill)
 			{
-				var layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent,
-					ViewGroup.LayoutParams.MatchParent);
+				var layoutParams = new ViewGroup.LayoutParams((int)width, (int)height);
 				textView.LayoutParameters = layoutParams;
 			}
 
