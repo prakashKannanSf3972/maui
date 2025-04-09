@@ -23,6 +23,7 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 		int _emptyItemViewType;
 		object _emptyView;
 		DataTemplate _emptyViewTemplate;
+		Label headerFooterMeasurementLabel;
 
 		public object Header
 		{
@@ -323,13 +324,14 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 
 			if (item is string text)
 			{
-				Label label = new Label { Text = text };
-
-				if (label.Handler is null)
+				if (headerFooterMeasurementLabel is null)
 				{
-					TemplateHelpers.GetHandler(label, ItemsView.FindMauiContext());
+					headerFooterMeasurementLabel = new Label();
+					TemplateHelpers.GetHandler(headerFooterMeasurementLabel, ItemsView.FindMauiContext());
 				}
-				size = label.Measure(double.PositiveInfinity, double.PositiveInfinity);
+
+				headerFooterMeasurementLabel.Text = text;
+				size = headerFooterMeasurementLabel.Measure(double.PositiveInfinity, double.PositiveInfinity);
 			}
 
 			var itemHeight = size.Height;
