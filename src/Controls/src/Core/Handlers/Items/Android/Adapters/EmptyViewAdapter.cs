@@ -23,7 +23,6 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 		int _emptyItemViewType;
 		object _emptyView;
 		DataTemplate _emptyViewTemplate;
-		Label headerFooterMeasurementLabel;
 
 		public object Header
 		{
@@ -238,7 +237,7 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 					double measuredHeight = GetHeight(parent);
 					double measuredWidth = GetWidth(parent);
 					// No template, EmptyView is not a Forms View, so just display EmptyView.ToString
-					return SimpleViewHolder.FromText(content?.ToString(), context);
+					return SimpleViewHolder.FromText(content?.ToString(), context, measuredWidth, measuredHeight);
 				}
 
 				// EmptyView is a Forms View; display that
@@ -324,14 +323,13 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 
 			if (item is string text)
 			{
-				if (headerFooterMeasurementLabel is null)
-				{
-					headerFooterMeasurementLabel = new Label();
-					TemplateHelpers.GetHandler(headerFooterMeasurementLabel, ItemsView.FindMauiContext());
-				}
+				Label label = new Label { Text = text };
 
-				headerFooterMeasurementLabel.Text = text;
-				size = headerFooterMeasurementLabel.Measure(double.PositiveInfinity, double.PositiveInfinity);
+				if (label.Handler is null)
+				{
+					TemplateHelpers.GetHandler(label, ItemsView.FindMauiContext());
+				}
+				size = label.Measure(double.PositiveInfinity, double.PositiveInfinity);
 			}
 
 			var itemHeight = size.Height;
