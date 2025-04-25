@@ -12,8 +12,7 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 
 		bool _undoNextScrollAdjustment;
 		bool _maintainingScrollOffsets;
-		bool isFirstItemReached = false;
-		bool isManuallyScrolled = false;
+		bool isFirstItemReached = true;
 		int _lastScrollX;
 		int _lastScrollY;
 		int _lastDeltaX;
@@ -213,15 +212,12 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 				// offset to shift; since the ItemsUpdatingScrollMode is set to KeepScrollOffset; we need to undo 
 				// that shift and stay where we were before the item was added
 
-				if (!isFirstItemReached && isManuallyScrolled)
+				if (isFirstItemReached)
 				{
-					_undoNextScrollAdjustment = false;
-					return;
+					_recyclerView.ScrollBy(-_lastDeltaX, -_lastDeltaY);
 				}
 
-				_recyclerView.ScrollBy(-_lastDeltaX, -_lastDeltaY);
 				_undoNextScrollAdjustment = false;
-
 				_lastDeltaX = 0;
 				_lastDeltaY = 0;
 			}
@@ -235,7 +231,6 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 			{
 				isFirstItemReached = _recyclerView.ComputeVerticalScrollOffset() == 0
 				&& _recyclerView.ComputeHorizontalScrollOffset() == 0;
-				isManuallyScrolled = true;
 			}
 
 			TrackOffsets();
