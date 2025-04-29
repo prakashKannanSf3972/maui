@@ -31,6 +31,8 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 		{
 			if (fill)
 			{
+				// Added comment Lines for Review Purpose :
+
 				// When displaying an EmptyView with Header and Footer, we need to account for the Header and Footer sizes in layout calculations.
 				// This prevents the EmptyView from occupying the full remaining space. 
 				// Note: When sizes change dynamically, SizeItemContentView is responsible for measuring and updating the layout accordingly.

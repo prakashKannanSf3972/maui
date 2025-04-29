@@ -234,8 +234,6 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 			{
 				if (content is not View formsView)
 				{
-					double measuredHeight = GetHeight(parent);
-					double measuredWidth = GetWidth(parent);
 					// No template, EmptyView is not a Forms View, so just display EmptyView.ToString
 					return SimpleViewHolder.FromText(content?.ToString(), context, () => GetWidth(parent), () => GetHeight(parent), ItemsView);
 				}
