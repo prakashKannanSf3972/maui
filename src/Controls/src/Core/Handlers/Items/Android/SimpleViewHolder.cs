@@ -27,18 +27,20 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 			itemsView.RemoveLogicalChild(View);
 		}
 
-		public static SimpleViewHolder FromText(string text, Context context, double width = 0, double height = 0, bool fill = true)
+		public static SimpleViewHolder FromText(string text, Context context, Func<double> width = null, Func<double> height = null, ItemsView container = null, bool fill = true)
 		{
-			var textView = new TextView(context) { Text = text };
-
 			if (fill)
 			{
-				var layoutParams = new ViewGroup.LayoutParams((int)width, (int)height);
-				textView.LayoutParameters = layoutParams;
+				// When displaying an EmptyView with Header and Footer, we need to account for the Header and Footer sizes in layout calculations.
+				// This prevents the EmptyView from occupying the full remaining space. 
+				// Note: When sizes change dynamically, SizeItemContentView is responsible for measuring and updating the layout accordingly.
+				Label label = new Label() { Text = text, VerticalOptions = LayoutOptions.Center, HorizontalOptions = LayoutOptions.Center };
+				SizedItemContentView itemContentControl = new SizedItemContentView(context, width, height);
+				itemContentControl.RealizeContent(label, container);
+				return new SimpleViewHolder(itemContentControl, null);
 			}
 
-			textView.Gravity = GravityFlags.Center;
-
+			TextView textView = new TextView(context) { Text = text, Gravity = GravityFlags.Center };
 			return new SimpleViewHolder(textView, null);
 		}
 

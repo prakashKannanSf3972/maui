@@ -237,7 +237,7 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 					double measuredHeight = GetHeight(parent);
 					double measuredWidth = GetWidth(parent);
 					// No template, EmptyView is not a Forms View, so just display EmptyView.ToString
-					return SimpleViewHolder.FromText(content?.ToString(), context, measuredWidth, measuredHeight);
+					return SimpleViewHolder.FromText(content?.ToString(), context, () => GetWidth(parent), () => GetHeight(parent), ItemsView);
 				}
 
 				// EmptyView is a Forms View; display that
@@ -324,11 +324,8 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 			if (item is string text)
 			{
 				Label label = new Label { Text = text };
+				TemplateHelpers.GetHandler(label, ItemsView.FindMauiContext());
 
-				if (label.Handler is null)
-				{
-					TemplateHelpers.GetHandler(label, ItemsView.FindMauiContext());
-				}
 				size = label.Measure(double.PositiveInfinity, double.PositiveInfinity);
 			}
 
