@@ -282,7 +282,7 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 			if (height <= 0)
 				height = parent.MeasuredHeight;
 
-			if (!IsItemsLayoutSetToHorizontal())
+			if (IsItemsLayoutSetToVertical())
 			{
 				var headerFooterHeight = parent.Context.ToPixels(_headerHeight + _footerHeight);
 				height -= (int)headerFooterHeight;
@@ -332,21 +332,21 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 				_footerHeight = itemHeight;
 		}
 
-		bool IsItemsLayoutSetToHorizontal()
+		bool IsItemsLayoutSetToVertical()
 		{
 			if (ItemsView is CollectionView collectionView)
 			{
 				if (collectionView.ItemsLayout is LinearItemsLayout linearLayout)
 				{
-					return linearLayout.Orientation == ItemsLayoutOrientation.Horizontal;
+					return linearLayout.Orientation == ItemsLayoutOrientation.Vertical;
 				}
 				else if (collectionView.ItemsLayout is GridItemsLayout gridItemsLayout)
 				{
-					return gridItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal;
+					return gridItemsLayout.Orientation == ItemsLayoutOrientation.Vertical;
 				}
 			}
 
-			return false;
+			return true;
 		}
 	}
 }
