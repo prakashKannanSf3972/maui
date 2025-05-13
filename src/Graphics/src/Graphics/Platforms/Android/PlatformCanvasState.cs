@@ -374,6 +374,8 @@ namespace Microsoft.Maui.Graphics.Platform
 				shadowPaint.SetShadowLayer(_shadowBlur, _shadowX * sx, _shadowY * sy, _shadowColor);
 				shadowPaint.Alpha = (int)(Alpha * 255f);
 				return shadowPaint;
+
+
 			}
 
 			return null;
