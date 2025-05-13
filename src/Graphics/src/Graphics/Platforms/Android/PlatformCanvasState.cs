@@ -67,7 +67,15 @@ namespace Microsoft.Maui.Graphics.Platform
 		public Color FillColor
 		{
 			get => _fillColor;
-			set => _fillColor = value;
+			set
+			{
+				_fillColor = value;
+
+				if (_shadowed)
+				{
+					SetShadow(_shadowBlur, _shadowX, _shadowY, _shadowColor);
+				}
+			}
 		}
 
 		public Color FontColor
@@ -352,7 +360,11 @@ namespace Microsoft.Maui.Graphics.Platform
 
 		public void SetShadow(float blur, float sx, float sy, global::Android.Graphics.Color color)
 		{
-			FillPaint.SetShadowLayer(blur, sx, sy, color);
+			if (FillColor.Alpha != 0)
+			{
+				FillPaint.SetShadowLayer(blur, sx, sy, color);
+			}
+
 			StrokePaint.SetShadowLayer(blur, sx, sy, color);
 			FontPaint.SetShadowLayer(blur, sx, sy, color);
 
