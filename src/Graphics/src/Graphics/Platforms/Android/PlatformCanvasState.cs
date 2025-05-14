@@ -61,7 +61,15 @@ namespace Microsoft.Maui.Graphics.Platform
 		public Color StrokeColor
 		{
 			get => _strokeColor;
-			set => _strokeColor = value;
+			set
+			{
+				_strokeColor = value;
+
+				if (_shadowed)
+				{
+					SetShadow(_shadowBlur, _shadowX, _shadowY, _shadowColor);
+				}
+			}
 		}
 
 		public Color FillColor
@@ -85,6 +93,11 @@ namespace Microsoft.Maui.Graphics.Platform
 			{
 				_fontColor = value;
 				FontPaint.Color = value != null ? _fontColor.AsColor() : global::Android.Graphics.Color.Black;
+
+				if (_shadowed)
+				{
+					SetShadow(_shadowBlur, _shadowX, _shadowY, _shadowColor);
+				}
 			}
 		}
 
@@ -360,19 +373,15 @@ namespace Microsoft.Maui.Graphics.Platform
 
 		public void SetShadow(float blur, float sx, float sy, global::Android.Graphics.Color color)
 		{
-			if (FillColor.Alpha != 0)
-			{
-				FillPaint.SetShadowLayer(blur, sx, sy, color);
-			}
-
-			StrokePaint.SetShadowLayer(blur, sx, sy, color);
-			FontPaint.SetShadowLayer(blur, sx, sy, color);
-
 			_shadowed = true;
 			_shadowBlur = blur;
 			_shadowX = sx;
 			_shadowY = sy;
 			_shadowColor = color;
+
+			ApplyShadow(FillPaint, FillColor.Alpha);
+			ApplyShadow(StrokePaint, StrokeColor.Alpha);
+			ApplyShadow(FontPaint, FontColor.Alpha);
 		}
 
 		public global::Android.Graphics.Paint GetShadowPaint(float sx, float sy)
@@ -431,6 +440,18 @@ namespace Microsoft.Maui.Graphics.Platform
 			Alpha = 1;
 			_scaleX = 1;
 			_scaleY = 1;
+		}
+
+		void ApplyShadow(global::Android.Graphics.Paint paint, float alpha)
+		{
+			if (alpha > 0)
+			{
+				paint.SetShadowLayer(_shadowBlur, _shadowX, _shadowY, _shadowColor);
+			}
+			else
+			{
+				paint.ClearShadowLayer();
+			}
 		}
 	}
 }
