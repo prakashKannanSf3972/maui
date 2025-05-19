@@ -3,23 +3,26 @@
              x:Class="Maui.Controls.Sample.MainPage"
              xmlns:local="clr-namespace:Maui.Controls.Sample">
 
-    <ContentPage.Content>
-        <Grid>
-            <Label x:Name="FpsLabel"
+ 
+    
+    <!--<ContentPage.Content>
+
+    <Grid>
+      <Label x:Name="FpsLabel"
                    AutomationId="FpsLabel"
                    HorizontalOptions="Start"
                    VerticalOptions="Start"
                    BackgroundColor="Black"
                    TextColor="White"
                    IsVisible="False"/>
-            <StackLayout Padding="10"
+      <StackLayout Padding="10"
                          HorizontalOptions="Center">
-                <Grid x:Name="ShadowContainer"
+        <Grid x:Name="ShadowContainer"
                       ColumnDefinitions="*, *, *"
                       HorizontalOptions="Center"
                       VerticalOptions="Start"
                       Padding="10">
-                    <Border
+          <Border
                         x:Name="BorderShadow"
                         FlowDirection="{Binding FlowDirection}"
                         IsEnabled="{Binding IsEnabled}"
@@ -28,15 +31,15 @@
                         Background="Red"
                         WidthRequest="100"
                         Margin="12, 0">
-                        <Border.Shadow>
-                            <Shadow
+            <Border.Shadow>
+              <Shadow
                                 Brush="{Binding Color}"
                                 Offset="{Binding Offset}"
                                 Radius="{Binding Radius}"
                                 Opacity="{Binding Opacity}"/>
-                        </Border.Shadow>
-                    </Border>
-                    <Image
+            </Border.Shadow>
+          </Border>
+          <Image
                         x:Name="ImageShadow"
                         FlowDirection="{Binding FlowDirection}"
                         IsEnabled="{Binding IsEnabled}"
@@ -46,15 +49,15 @@
                         Source="shopping_cart.png"
                         WidthRequest="100"
                         Margin="12, 0">
-                        <Image.Shadow>
-                            <Shadow
+            <Image.Shadow>
+              <Shadow
                                 Brush="{Binding Color}"
                                 Offset="{Binding Offset}"
                                 Radius="{Binding Radius}"
                                 Opacity="{Binding Opacity}"/>
-                        </Image.Shadow>
-                    </Image>
-                    <Label
+            </Image.Shadow>
+          </Image>
+          <Label
                         x:Name="LabelShadow"
                         FlowDirection="{Binding FlowDirection}"
                         IsEnabled="{Binding IsEnabled}"
@@ -63,38 +66,40 @@
                         Text="Label"
                         FontSize="18"
                         Margin="12, 0">
-                        <Label.Shadow>
-                            <Shadow
+            <Label.Shadow>
+              <Shadow
                                 Brush="{Binding Color}"
                                 Offset="{Binding Offset}"
                                 Radius="{Binding Radius}"
                                 Opacity="{Binding Opacity}"/>
-                        </Label.Shadow>
-                    </Label>
-                </Grid>
-                <Grid x:Name="OptionsContainer"
+            </Label.Shadow>
+          </Label>
+        </Grid>
+
+        <ScrollView BackgroundColor="Yellow" Orientation="Both">
+          <Grid x:Name="OptionsContainer"
                       ColumnDefinitions="*, *"
                       RowDefinitions="*, *">
-                    <!-- Left Column -->
-                    <StackLayout Grid.Column="0"
+            --><!-- Left Column --><!--
+            <StackLayout Grid.Column="0"
                                  Padding="10"
                                  Spacing="8">
-                        <Label AutomationId="ColorValue"
+              --><!--<Label AutomationId="ColorValue"
                                Text="{Binding Color, StringFormat='Color: {0}'}"
                                HorizontalOptions="Start"
                                LineBreakMode="CharacterWrap"
                                FontSize="10"
                                WidthRequest="100"/>
-                        <Entry x:Name="ColorEntry"
+              <Entry x:Name="ColorEntry"
                                AutomationId="ColorEntry"
                                TextChanged="OnColorChanged"
                                HorizontalOptions="Start"
                                WidthRequest="100"
                                Placeholder="Shadow Color Hex"/>
-                        <Label AutomationId="OffsetXValue"
+              <Label AutomationId="OffsetXValue"
                                Text="{Binding OffsetX, StringFormat='OffsetX: {0}'}"
                                FontSize="15"/>
-                        <Entry x:Name="OffsetXEntry"
+              <Entry x:Name="OffsetXEntry"
                                AutomationId="OffsetXEntry"
                                Text="{Binding OffsetX}"
                                TextChanged="OnOffsetXChanged"
@@ -102,10 +107,10 @@
                                HorizontalOptions="Start"
                                WidthRequest="100"
                                Placeholder="Shadow Radius"/>
-                        <Label AutomationId="OffsetYValue"
+              <Label AutomationId="OffsetYValue"
                                Text="{Binding OffsetY, StringFormat='OffsetY: {0}'}"
                                FontSize="15"/>
-                        <Entry x:Name="OffsetYEntry"
+              <Entry x:Name="OffsetYEntry"
                                AutomationId="OffsetYEntry"
                                Text="{Binding OffsetY}"
                                TextChanged="OnOffsetYChanged"
@@ -113,120 +118,123 @@
                                HorizontalOptions="Start"
                                WidthRequest="100"
                                Placeholder="Shadow Radius"/>
-                        <Label AutomationId="RadiusValue"
+              <Label AutomationId="RadiusValue"
                                Text="{Binding Radius, StringFormat='Radius: {0}'}"
                                FontSize="15"/>
-                        <Entry x:Name="RadiusEntry"
+              <Entry x:Name="RadiusEntry"
                                AutomationId="RadiusEntry"
                                Text="{Binding Radius}"
                                TextChanged="OnRadiusChanged"
                                Keyboard="Numeric"
                                HorizontalOptions="Start"
                                WidthRequest="100"
-                               Placeholder="Shadow Radius"/>
-                        <Label AutomationId="OpacityValue"
+                               Placeholder="Shadow Radius"/>--><!--
+              <Label AutomationId="OpacityValue"
                                Text="{Binding Opacity, StringFormat='Opacity: {0}'}"
                                FontSize="15"/>
-                        <Entry x:Name="OpacityEntry"
+              <Entry x:Name="OpacityEntry"
                                AutomationId="OpacityEntry"
                                Text="{Binding Opacity}"
                                TextChanged="OnOpacityChanged"
                                Keyboard="Numeric"
+                               HeightRequest="0"
                                HorizontalOptions="Start"
                                WidthRequest="100"
                                Placeholder="Shadow Opacity"/>
-                    </StackLayout>
-                    <StackLayout Grid.Column="0"
+            </StackLayout>
+            <StackLayout Grid.Column="0"
                                  Grid.Row="1"
                                  Padding="10"
                                  Spacing="8">
-                        <Button x:Name="ClipButton"
+              <Button x:Name="ClipButton"
                                 AutomationId="ClipButton"
                                 Text="Add Clip"
                                 HorizontalOptions="Start"
                                 Clicked="OnClipClicked"/>
-                        <Button x:Name="ShadowButton"
+              <Button x:Name="ShadowButton"
                                 AutomationId="ShadowButton"
                                 Text="Remove Shadow"
                                 HorizontalOptions="Start"
                                 Clicked="OnShadowClicked"/>
-                        <Button x:Name="BenchmarkButton"
+              <Button x:Name="BenchmarkButton"
                                 AutomationId="BenchmarkButton"
                                 Text="Benchmark"
                                 HorizontalOptions="Start"
                                 Clicked="OnBenchmarkClicked"/>
-                    </StackLayout>
-                    <!-- Right Column -->
-                    <StackLayout Grid.Column="1"
+            </StackLayout>
+            --><!-- Right Column --><!--
+            <StackLayout Grid.Column="1"
                                  Padding="10"
                                  Spacing="8">
-                        <!-- Flow Direction -->
-                        <Label Text="FlowDirection:"
+              --><!-- Flow Direction --><!--
+              <Label Text="FlowDirection:"
                                FontSize="15"/>
-                        <StackLayout Orientation="Horizontal">
-                            <RadioButton x:Name="FlowDirectionLTR"
+              <StackLayout Orientation="Horizontal">
+                <RadioButton x:Name="FlowDirectionLTR"
                                          AutomationId="FlowDirectionLTR"
                                          GroupName="FlowDirection"
                                          Content="LTR"
                                          IsChecked="True"
                                          FontSize="12"
                                          CheckedChanged="OnFlowDirectionChanged"/>
-                            <RadioButton x:Name="FlowDirectionRTL"
+                <RadioButton x:Name="FlowDirectionRTL"
                                          AutomationId="FlowDirectionRTL"
                                          GroupName="FlowDirection"
                                          Content="RTL"
                                          FontSize="12"
                                          CheckedChanged="OnFlowDirectionChanged"/>
-                        </StackLayout>
-                        <!-- IsEnabled -->
-                        <Label Text="IsEnabled:"
+              </StackLayout>
+              --><!-- IsEnabled --><!--
+              <Label Text="IsEnabled:"
                                FontSize="15"/>
-                        <StackLayout Orientation="Horizontal">
-                            <RadioButton x:Name="IsEnabledTrueRadio"
+              <StackLayout Orientation="Horizontal">
+                <RadioButton x:Name="IsEnabledTrueRadio"
                                          AutomationId="IsEnabledTrueRadio"
                                          GroupName="IsEnabled"
                                          Content="True"
                                          IsChecked="True"
                                          FontSize="12"
                                          CheckedChanged="OnIsEnabledCheckedChanged"/>
-                            <RadioButton x:Name="IsEnabledFalseRadio"
+                <RadioButton x:Name="IsEnabledFalseRadio"
                                          AutomationId="IsEnabledFalseRadio"
                                          GroupName="IsEnabled"
                                          Content="False"
                                          FontSize="12"
                                          CheckedChanged="OnIsEnabledCheckedChanged"/>
-                        </StackLayout>
-                        <!-- Is Visible -->
-                        <Label Text="IsVisible:"
+              </StackLayout>
+              --><!-- Is Visible --><!--
+              <Label Text="IsVisible:"
                                FontSize="15"/>
-                        <StackLayout Orientation="Horizontal">
-                            <RadioButton x:Name="IsVisibleTrueRadio"
+              <StackLayout Orientation="Horizontal">
+                <RadioButton x:Name="IsVisibleTrueRadio"
                                          AutomationId="IsVisibleTrueRadio"
                                          GroupName="IsVisible"
                                          Content="True"
                                          IsChecked="True"
                                          FontSize="12"
                                          CheckedChanged="OnIsVisibleCheckedChanged"/>
-                            <RadioButton x:Name="IsVisibleFalseRadio"
+                <RadioButton x:Name="IsVisibleFalseRadio"
                                          AutomationId="IsVisibleFalseRadio"
                                          GroupName="IsVisible"
                                          Content="False"
                                          FontSize="12"
                                          CheckedChanged="OnIsVisibleCheckedChanged"/>
-                        </StackLayout>
-                    </StackLayout>
-                    <StackLayout Grid.Column="1"
+              </StackLayout>
+            </StackLayout>
+            <StackLayout Grid.Column="1"
                                  Grid.Row="1"
                                  Padding="10"
                                  Spacing="8">
-                        <Button x:Name="ResetButton"
+              <Button x:Name="ResetButton"
                                 AutomationId="ResetButton"
                                 Text="Reset"
                                 HorizontalOptions="Start"
                                 Command="{Binding ResetCommand}"/>
-                    </StackLayout>
-                </Grid>
             </StackLayout>
-        </Grid>
-    </ContentPage.Content>
+          </Grid>
+        </ScrollView>
+      </StackLayout>
+    </Grid>
+  </ContentPage.Content>-->
+ 
 </ContentPage>
