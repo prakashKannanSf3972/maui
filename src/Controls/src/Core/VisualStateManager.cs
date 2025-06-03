@@ -721,7 +721,7 @@ namespace Microsoft.Maui.Controls
 			return false;
 		}
 
-		internal static bool IsInSelectedState(this VisualElement element)
+		internal static bool IsElementInSelectedState(this VisualElement element)
 		{
 			var groups = VisualStateManager.GetVisualStateGroups(element);
 			foreach (var group in groups)
