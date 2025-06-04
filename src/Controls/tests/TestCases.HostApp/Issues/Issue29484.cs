@@ -39,7 +39,7 @@
 		{
 			return new DataTemplate(() =>
 			{
-				var label = new Label { Style = style };
+				Label label = new Label { Style = style };
 				label.SetBinding(Label.TextProperty, ".");
 				return label;
 			});
@@ -63,12 +63,12 @@
 
 		VisualStateGroupList CreateVisualState()
 		{
-			var groupList = new VisualStateGroupList();
-			var commonStates = new VisualStateGroup { Name = "CommonStates" };
+			VisualStateGroupList groupList = new VisualStateGroupList();
+			VisualStateGroup commonStates = new VisualStateGroup { Name = "CommonStates" };
 
-			var normalState = new VisualState { Name = "Normal" };
-			var pointerOverState = new VisualState { Name = "PointerOver" };
-			var selectedState = new VisualState { Name = "Selected" };
+			VisualState normalState = new VisualState { Name = "Normal" };
+			VisualState pointerOverState = new VisualState { Name = "PointerOver" };
+			VisualState selectedState = new VisualState { Name = "Selected" };
 
 			pointerOverState.Setters.Add(new Setter { Property = BackgroundColorProperty, Value = Colors.DarkTurquoise });
 			selectedState.Setters.Add(new Setter { Property = BackgroundColorProperty, Value = Colors.DarkBlue });
