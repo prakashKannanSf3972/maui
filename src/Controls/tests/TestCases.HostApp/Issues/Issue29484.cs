@@ -68,7 +68,7 @@ public class Issue29484 : TestContentPage
 
 		Label headerLabel = new Label
 		{
-			Text = "PointerOver + Selected"
+			Text = "PointerOverAndSelectedState"
 		};
 		grid.Add(headerLabel, 0, 0);
 		CollectionView collectionView = new CollectionView

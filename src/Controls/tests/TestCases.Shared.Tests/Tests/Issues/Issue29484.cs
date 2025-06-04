@@ -14,11 +14,11 @@ public class Issue29484 : _IssuesUITest
 
 	[Test]
 	[Category(UITestCategories.CollectionView)]
-	public void CollectionViewPointerOverAndSelectedState()
+	public void PointerOverWithSelectedStateShouldWork()
 	{
 		App.WaitForElement("PointerOverSelectView");
-		App.Tap("Item 1");
-		App.Tap("Item 3");
+		App.Tap("Item 2");
+		App.Tap("PointerOverAndSelectedState");
 		VerifyScreenshot();
 	}
 }
