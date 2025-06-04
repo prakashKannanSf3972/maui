@@ -1,91 +1,84 @@
-﻿namespace Maui.Controls.Sample.Issues;
-
-[Issue(IssueTracker.Github, 29484, "CollectionView Selected state does not work on the selected item when combined with PointerOver", PlatformAffected.UWP | PlatformAffected.macOS)]
-public class Issue29484 : TestContentPage
+﻿namespace Maui.Controls.Sample.Issues
 {
-	protected override void Init()
+	[Issue(IssueTracker.Github, 29484, "CollectionView Selected state does not work on the selected item when combined with PointerOver", PlatformAffected.UWP | PlatformAffected.macOS)]
+	public class Issue29484 : TestContentPage
 	{
-		Style pointerOverSelectedItemStyle = new Style(typeof(Label))
+		protected override void Init()
 		{
-			Setters =
-				{
-					new Setter { Property = BackgroundColorProperty, Value = Colors.Transparent }
-				}
-		};
+			Style pointerOverSelectedStyle = CreatePointerOverSelectedItemStyle();
+			DataTemplate pointerOverSelectedItemTemplate = CreateItemTemplate(pointerOverSelectedStyle);
 
-		VisualStateGroupList visualStateGroupList = new VisualStateGroupList();
-		VisualStateGroup commonStatesGroup = new VisualStateGroup { Name = "CommonStates" };
-
-		VisualState normalState = new VisualState { Name = "Normal" };
-		commonStatesGroup.States.Add(normalState);
-
-		VisualState pointerOverState = new VisualState { Name = "PointerOver" };
-		pointerOverState.Setters.Add(new Setter { Property = BackgroundColorProperty, Value = Colors.DarkTurquoise });
-		commonStatesGroup.States.Add(pointerOverState);
-
-		VisualState selectedState = new VisualState { Name = "Selected" };
-		selectedState.Setters.Add(new Setter { Property = BackgroundColorProperty, Value = Colors.DarkBlue });
-		commonStatesGroup.States.Add(selectedState);
-
-		visualStateGroupList.Add(commonStatesGroup);
-
-		pointerOverSelectedItemStyle.Setters.Add(new Setter
-		{
-			Property = VisualStateManager.VisualStateGroupsProperty,
-			Value = visualStateGroupList
-		});
-
-		DataTemplate pointerOverSelectedItemTemplate = new DataTemplate(() =>
-		{
-			Label label = new Label
+			Grid grid = new Grid
 			{
-				Style = pointerOverSelectedItemStyle
+				ColumnSpacing = 10,
+				HorizontalOptions = LayoutOptions.Center,
+				RowDefinitions =
+				{
+					new RowDefinition { Height = GridLength.Auto },
+					new RowDefinition { Height = GridLength.Star },
+				}
 			};
-			label.SetBinding(Label.TextProperty, ".");
-			return label;
-		});
 
-		Resources.Add("PointerOverSelectedItemStyle", pointerOverSelectedItemStyle);
-		Resources.Add("PointerOverSelectedItemTemplate", pointerOverSelectedItemTemplate);
+			grid.Add(new Label { Text = "PointerOverAndSelectedState" }, 0, 0);
+			grid.Add(InitializeCollectionView(pointerOverSelectedItemTemplate), 0, 1);
+			Content = grid;
+		}
 
-		Grid grid = new Grid
+		CollectionView InitializeCollectionView(DataTemplate itemTemplate)
 		{
-			ColumnSpacing = 10,
-			HorizontalOptions = LayoutOptions.Center,
-			RowDefinitions =
-				{
-					new RowDefinition { Height = GridLength.Auto },
-					new RowDefinition { Height = GridLength.Auto },
-					new RowDefinition { Height = GridLength.Star }
-				},
-			ColumnDefinitions =
-				{
-					new ColumnDefinition { Width = GridLength.Auto },
-					new ColumnDefinition { Width = GridLength.Auto },
-					new ColumnDefinition { Width = GridLength.Auto }
-				}
-		};
-
-		Label headerLabel = new Label
-		{
-			Text = "PointerOverAndSelectedState"
-		};
-		grid.Add(headerLabel, 0, 0);
-		CollectionView collectionView = new CollectionView
-		{
-			AutomationId = "PointerOverSelectView",
-			ItemTemplate = pointerOverSelectedItemTemplate,
-			SelectionMode = SelectionMode.Single,
-			ItemsSource = new List<string>
+			return new CollectionView
 			{
-				"Item 1",
-				"Item 2",
-				"Item 3",
-				"Item 4"
-			}
-		};
-		grid.Add(collectionView, 0, 1);
-		Grid.SetRowSpan(collectionView, 2);
-		Content = grid;
+				AutomationId = "CollectionView",
+				ItemTemplate = itemTemplate,
+				SelectionMode = SelectionMode.Single,
+				ItemsSource = new List<string> { "Item 1", "Item 2", "Item 3", "Item 4" }
+			};
+		}
+
+		DataTemplate CreateItemTemplate(Style style)
+		{
+			return new DataTemplate(() =>
+			{
+				var label = new Label { Style = style };
+				label.SetBinding(Label.TextProperty, ".");
+				return label;
+			});
+		}
+
+		Style CreatePointerOverSelectedItemStyle()
+		{
+			return new Style(typeof(Label))
+			{
+				Setters =
+				{
+					new Setter { Property = BackgroundColorProperty, Value = Colors.Transparent },
+					new Setter
+					{
+						Property = VisualStateManager.VisualStateGroupsProperty,
+						Value = CreateVisualState()
+					}
+				}
+			};
+		}
+
+		VisualStateGroupList CreateVisualState()
+		{
+			var groupList = new VisualStateGroupList();
+			var commonStates = new VisualStateGroup { Name = "CommonStates" };
+
+			var normalState = new VisualState { Name = "Normal" };
+			var pointerOverState = new VisualState { Name = "PointerOver" };
+			var selectedState = new VisualState { Name = "Selected" };
+
+			pointerOverState.Setters.Add(new Setter { Property = BackgroundColorProperty, Value = Colors.DarkTurquoise });
+			selectedState.Setters.Add(new Setter { Property = BackgroundColorProperty, Value = Colors.DarkBlue });
+
+			commonStates.States.Add(pointerOverState);
+			commonStates.States.Add(selectedState);
+			commonStates.States.Add(normalState);
+
+			groupList.Add(commonStates);
+			return groupList;
+		}
 	}
 }
