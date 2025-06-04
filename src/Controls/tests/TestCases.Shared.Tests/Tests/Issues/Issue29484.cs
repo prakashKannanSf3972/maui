@@ -16,7 +16,7 @@ public class Issue29484 : _IssuesUITest
 	[Category(UITestCategories.CollectionView)]
 	public void PointerOverWithSelectedStateShouldWork()
 	{
-		App.WaitForElement("PointerOverSelectView");
+		App.WaitForElement("CollectionView");
 		App.Tap("Item 2");
 		App.Tap("PointerOverAndSelectedState");
 		VerifyScreenshot();
