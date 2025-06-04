@@ -10,7 +10,6 @@
 
 			Grid grid = new Grid
 			{
-				ColumnSpacing = 10,
 				HorizontalOptions = LayoutOptions.Center,
 				RowDefinitions =
 				{
