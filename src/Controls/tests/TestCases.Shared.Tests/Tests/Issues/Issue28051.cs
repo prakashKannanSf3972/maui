@@ -1,5 +1,4 @@
-﻿#if ANDROID
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using UITest.Appium;
 using UITest.Core;
 
@@ -22,7 +21,6 @@ public class Issue28051 : _IssuesUITest
 		{
 			App.Tap("RefreshItemsButton");
 		}
-		App.WaitForElement(Refresh)
+		App.WaitForElement(Refresh);
 	}
 }
-#endif
