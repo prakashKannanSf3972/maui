@@ -324,13 +324,19 @@ namespace Microsoft.Maui.Controls
 
 		static void Invalidate(BindableObject bindable, object oldValue, object newValue)
 		{
+			if (bindable is Grid grid)
+			{
+				if (grid.Parent is Grid rootGrid)
+				{
+					rootGrid.InvalidateMeasure();
+					return;
+				}
+
+				grid.InvalidateMeasure();
+			}
 			if (bindable is Element element && element.Parent is Grid parentGrid)
 			{
 				parentGrid.InvalidateMeasure();
-			}
-			else if (bindable is Grid grid)
-			{
-				grid.InvalidateMeasure();
 			}
 		}
 
