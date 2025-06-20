@@ -176,6 +176,11 @@ namespace Microsoft.Maui.Platform
 		public static void InvalidateMeasure(this FrameworkElement platformView, IView view)
 		{
 			platformView.InvalidateMeasure();
+
+			if (platformView.Parent is LayoutPanel layoutContainer)
+			{
+				layoutContainer.InvalidateMeasure();
+			}
 		}
 
 		public static void UpdateWidth(this FrameworkElement platformView, IView view)
