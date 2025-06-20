@@ -8,14 +8,18 @@ public class Issue20404 : _IssuesUITest
 {
 	public Issue20404(TestDevice testDevice) : base(testDevice) { }
 
-	public override string Issue => "Dynamic Grid.Row changes don't trigger layout update on Windows until window resize";
+	public override string Issue => "Dynamic Grid Row/Column changes don't trigger layout update on Windows until window resize";
+	const string StatusLabel = "StatusLabel";
 
 	[Test]
 	[Category(UITestCategories.Layout)]
-	public void VerifyDynamicGridRowChangeTriggersLayoutUpdate()
+	public void DynamicGridRowColumnChangeShouldInvalidate()
 	{
-		App.WaitForElement("ToggleButton");
-		App.Tap("ToggleButton");
-		VerifyScreenshot();
+		App.WaitForElement(StatusLabel);
+		App.Tap("ToggleRowButton");
+		VerifyScreenshot("AfterGridRowToggled");
+		App.WaitForElement(StatusLabel);
+		App.Tap("ToggleColumnButton");
+		VerifyScreenshot("AfterGridColumnToggled");
 	}
 }
