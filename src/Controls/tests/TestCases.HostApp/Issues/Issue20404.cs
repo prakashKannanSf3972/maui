@@ -23,8 +23,8 @@ public class Issue20404 : TestContentPage
 			ColumnSpacing = 8,
 			RowDefinitions =
 			{
-				new RowDefinition { Height = new GridLength(2, GridUnitType.Star) },
-				new RowDefinition { Height = new GridLength(2, GridUnitType.Star) },
+				new RowDefinition { Height = GridLength.Star },
+				new RowDefinition { Height = GridLength.Star },
 				new RowDefinition { Height = GridLength.Auto },
 				new RowDefinition { Height = GridLength.Auto }
 			},
