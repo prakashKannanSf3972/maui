@@ -6,9 +6,6 @@ public class Issue20404 : TestContentPage
 	Grid dynamicGrid;
 	Button toggleRowButton;
 	Button toggleColumnButton;
-	Label statusLabel;
-	int rowToggleCount;
-	int columnToggleCount;
 
 	protected override void Init()
 	{
@@ -37,7 +34,6 @@ public class Issue20404 : TestContentPage
 
 		AddStaticGrids(mainGrid);
 		AddDynamicGrid(mainGrid);
-		AddStatusLabel(mainGrid);
 		AddControlButtons(mainGrid);
 		return mainGrid;
 	}
@@ -100,22 +96,6 @@ public class Issue20404 : TestContentPage
 		parent.Children.Add(dynamicGrid);
 	}
 
-	void AddStatusLabel(Grid parent)
-	{
-		statusLabel = new Label
-		{
-			Text = "Dynamic Grid: Row=1, Column=1",
-			AutomationId = "StatusLabel",
-			BackgroundColor = Colors.Yellow,
-			Padding = 10,
-			HorizontalOptions = LayoutOptions.Fill
-		};
-
-		Grid.SetRow(statusLabel, 2);
-		Grid.SetColumnSpan(statusLabel, 2);
-		parent.Children.Add(statusLabel);
-	}
-
 	void AddControlButtons(Grid parent)
 	{
 		toggleRowButton = new Button
@@ -146,26 +126,13 @@ public class Issue20404 : TestContentPage
 
 	void OnToggleRowClicked(object sender, EventArgs e)
 	{
-		int newRow = rowToggleCount % 2 == 0 ? 0 : 1;
-		Grid.SetRow(dynamicGrid, newRow);
-		toggleRowButton.Text = $"Toggle Row (Current: {newRow})";
-		UpdateStatusLabel();
-		rowToggleCount++;
+		Grid.SetRow(dynamicGrid, 0);
+		toggleRowButton.Text = $"Toggle Row (Current: 0)";
 	}
 
 	void OnToggleColumnClicked(object sender, EventArgs e)
 	{
-		int newColumn = columnToggleCount % 2 == 0 ? 0 : 1;
-		Grid.SetColumn(dynamicGrid, newColumn);
-		toggleColumnButton.Text = $"Toggle Column (Current: {newColumn})";
-		UpdateStatusLabel();
-		columnToggleCount++;
-	}
-
-	void UpdateStatusLabel()
-	{
-		int currentRow = Grid.GetRow(dynamicGrid);
-		int currentColumn = Grid.GetColumn(dynamicGrid);
-		statusLabel.Text = $"Dynamic Grid: Row={currentRow}, Column={currentColumn} | Toggles: R={rowToggleCount}, C={columnToggleCount}";
+		Grid.SetColumn(dynamicGrid, 0);
+		toggleColumnButton.Text = $"Toggle Column (Current: 0)";
 	}
 }
