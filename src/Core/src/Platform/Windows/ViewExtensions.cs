@@ -441,7 +441,7 @@ namespace Microsoft.Maui.Platform
 			}
 		}
 
-		// TODO : The modifier needs to be changed to public in the future.
+		// TODO : Make public in NET 10.
 		internal static void UpdateInputTransparent(this LayoutPanel layoutPanel, ILayoutHandler handler, ILayout layout)
 		{
 			if (layoutPanel is null || layout is null)
