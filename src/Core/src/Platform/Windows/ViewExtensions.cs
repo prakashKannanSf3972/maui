@@ -444,8 +444,13 @@ namespace Microsoft.Maui.Platform
 		// TODO : The modifier needs to be changed to public in the future.
 		internal static void UpdateInputTransparent(this LayoutPanel layoutPanel, ILayoutHandler handler, ILayout layout)
 		{
+			if (layoutPanel is null || layout is null)
+			{
+				return;
+			}
+
 			// Set hit test visibility based on input transparency
-			layoutPanel?.IsHitTestVisible = !layout?.InputTransparent;
+			layoutPanel.IsHitTestVisible = !layout.InputTransparent;
 		}
 	}
 }
