@@ -3,7 +3,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using WRect = global::Windows.Foundation.Rect;
 using WSize = global::Windows.Foundation.Size;
-using WSolidColorBrush = Microsoft.UI.Xaml.Media.SolidColorBrush;
 
 namespace Microsoft.Maui.Platform
 {
@@ -24,28 +23,6 @@ namespace Microsoft.Maui.Platform
 			}
 
 			return actual;
-		}
-
-		public void UpdateInputTransparent(bool inputTransparent, Brush? background)
-		{
-			// Set hit test visibility based on input transparency
-			IsHitTestVisible = !inputTransparent;
-
-			SetBackground(background);
-		}
-
-		void SetBackground(Brush? background)
-		{
-			if (background is null)
-			{
-				// We can't have a null background, because that would allow input through
-				// So we'll make the background color transparent (visually the same as null, but consumes input)
-				Background = new WSolidColorBrush(UI.Colors.Transparent);
-			}
-			else
-			{
-				Background = background;
-			}
 		}
 	}
 }
