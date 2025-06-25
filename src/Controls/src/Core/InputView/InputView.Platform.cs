@@ -19,8 +19,12 @@ namespace Microsoft.Maui.Controls
 		internal static void MapIsVisible(IViewHandler handler, IView view)
 		{
 			if (view is not InputView inputView || handler?.PlatformView == null)
+			{
 				return;
+			}
 
+			// Prevent input queuing when InputView is hidden
+			// Dismiss soft keyboard on Android/iOS to stop background input processing
 			if (!inputView.IsVisible && inputView.IsSoftInputShowing())
 			{
 				inputView.HideSoftInputAsync(CancellationToken.None);
