@@ -329,7 +329,7 @@ namespace Microsoft.Maui.Controls
 				grid.InvalidateMeasure();
 #if Windows
 				// On Windows, explicit parent invalidation is required for Grid.Row/Column changes due to child layout arrangement.
-				if(grid.Parent is Grid containerGrid)
+				if (grid.Parent is Grid containerGrid)
 				{
 					containerGrid.InvalidateMeasure();
 				}
