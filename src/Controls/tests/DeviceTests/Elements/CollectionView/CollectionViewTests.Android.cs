@@ -193,5 +193,75 @@ namespace Microsoft.Maui.DeviceTests
 
 			return cellContent.ToPlatform().GetParentOfType<ItemContentView>().GetBoundingBox();
 		}
+
+		[Fact(DisplayName = "Header should not fire Unloaded event when ItemsSource updates")]
+		public async Task HeaderDoesNotUnloadWhenItemsSourceUpdates()
+		{
+			SetupBuilder();
+
+			int headerUnloadedCount = 0;
+			int headerLoadedCount = 0;
+
+			var headerLabel = new Label 
+			{ 
+				Text = "Header",
+				AutomationId = "HeaderLabel"
+			};
+
+			headerLabel.Loaded += (s, e) => headerLoadedCount++;
+			headerLabel.Unloaded += (s, e) => headerUnloadedCount++;
+
+			var source = new ObservableCollection<string> { "Initial Item" };
+
+			var collectionView = new CollectionView
+			{
+				ItemsSource = source,
+				Header = headerLabel
+			};
+
+			ContentPage contentPage = new ContentPage() { Content = collectionView };
+
+			await CreateHandlerAndAddToWindow<IWindowHandler>(contentPage,
+				async (_) =>
+				{
+					// Wait for initial layout
+					await OnLoadedAsync(headerLabel);
+
+					// Verify header loaded initially
+					Assert.Equal(1, headerLoadedCount);
+					Assert.Equal(0, headerUnloadedCount);
+
+					// Add items to trigger collection change
+					source.Add("New Item 1");
+					source.Add("New Item 2");
+
+					// Give time for any potential Unloaded events to fire
+					await Task.Delay(100);
+
+					// Header should NOT have been unloaded when items were added
+					Assert.Equal(1, headerLoadedCount); // Should still be 1
+					Assert.Equal(0, headerUnloadedCount); // Should still be 0
+
+					// Remove items to trigger another collection change  
+					source.Remove("Initial Item");
+
+					// Give time for any potential Unloaded events to fire
+					await Task.Delay(100);
+
+					// Header should STILL not have been unloaded
+					Assert.Equal(1, headerLoadedCount); // Should still be 1
+					Assert.Equal(0, headerUnloadedCount); // Should still be 0
+
+					// Clear the collection to trigger Reset
+					source.Clear();
+
+					// Give time for any potential Unloaded events to fire
+					await Task.Delay(100);
+
+					// Header should STILL not have been unloaded even on Reset
+					Assert.Equal(1, headerLoadedCount); // Should still be 1
+					Assert.Equal(0, headerUnloadedCount); // Should still be 0
+				});
+		}
 	}
 }
