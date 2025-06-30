@@ -231,24 +231,30 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 
 			_emptyCollectionObserver.Stop(oldItemViewAdapter);
 
-			ItemsViewAdapter = CreateAdapter();
+			if (oldItemViewAdapter != null && CanReuseExistingAdapter(oldItemViewAdapter))
+			{
+				UpdateExistingAdapter(oldItemViewAdapter);
+				ItemsViewAdapter = oldItemViewAdapter;
+			}
+			else
+			{
+				ItemsViewAdapter = CreateAdapter();
+				SetAdapter(null);
+				SwapAdapter(ItemsViewAdapter, true);
+				oldItemViewAdapter?.Dispose();
+			}
 
 			(RecyclerViewScrollListener as RecyclerViewScrollListener<TItemsView, TItemsViewSource>)?.UpdateAdapter(ItemsViewAdapter);
 
 			if (GetAdapter() != _emptyViewAdapter)
 			{
 				_itemsUpdateScrollObserver.Stop(oldItemViewAdapter);
-
-				SetAdapter(null);
-
-				SwapAdapter(ItemsViewAdapter, true);
+				_itemsUpdateScrollObserver.Start(ItemsViewAdapter);
 			}
 
 			UpdateEmptyView();
 
 			_itemTouchHelperCallback?.SetAdapter(ItemsViewAdapter as IItemTouchHelperAdapter);
-
-			oldItemViewAdapter?.Dispose();
 		}
 
 		public virtual void UpdateCanReorderItems()
@@ -630,6 +636,55 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 			RecyclerViewScrollListener.Dispose();
 			ClearOnScrollListeners();
 			RecyclerViewScrollListener = null;
+		}
+
+		bool CanReuseExistingAdapter(TAdapter adapter)
+		{
+			if (adapter == null || adapter.ItemsSource == null || ItemsView == null)
+			{
+				return false;
+			}
+
+			if (GetAdapter() != adapter || adapter.IsDisposed())
+			{
+				return false;
+			}
+
+			if (!(ItemsView is StructuredItemsView structuredView))
+				return true;
+
+
+			var currentSource = adapter.ItemsSource;
+			bool currentHasHeader = currentSource.HasHeader;
+			bool currentHasFooter = currentSource.HasFooter;
+
+			bool newHasHeader = structuredView.Header != null || structuredView.HeaderTemplate != null;
+			bool newHasFooter = structuredView.Footer != null || structuredView.FooterTemplate != null;
+
+			return currentHasHeader == newHasHeader && currentHasFooter == newHasFooter;
+		}
+
+		void UpdateExistingAdapter(TAdapter adapter)
+		{
+			var oldItemsSource = adapter.ItemsSource;
+
+			var tempAdapter = CreateAdapter();
+			var newItemsSource = tempAdapter.ItemsSource;
+
+			var observableSource = newItemsSource as IObservableItemsViewSource;
+			if (observableSource != null)
+			{
+				observableSource.ObserveChanges = false;
+			}
+
+			adapter.ItemsSource = newItemsSource;
+
+			if (observableSource != null)
+			{
+				observableSource.ObserveChanges = true;
+			}
+
+			oldItemsSource?.Dispose();
 		}
 	}
 }
