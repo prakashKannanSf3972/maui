@@ -22,7 +22,7 @@ public class Issue17389 : _IssuesUITest
         {
              "RedGrid",
              "GreenGrid",
-             "BlueStack",
+             "BlueBorder",
              "PurpleContent"
         };
 
@@ -31,7 +31,7 @@ public class Issue17389 : _IssuesUITest
             App.Tap(layout);
         }
 
-        App.WaitForElement("Tap count: 0");
+        App.WaitForElement("Tap count: 4");
         App.Click("ToggleInputTransparentButton");
 
         foreach (var layout in layouts)
@@ -39,7 +39,7 @@ public class Issue17389 : _IssuesUITest
             App.Tap(layout);
         }
 
-        App.WaitForElement("Tap count: 4");
+        App.WaitForElement("Tap count: 0");
     }
 
     [Test, Order(2)]

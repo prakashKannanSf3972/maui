@@ -5,12 +5,12 @@ public class Issue17389 : TestContentPage
 {
     Grid redGrid;
     Grid greenGrid;
-    StackLayout blueStack;
+    Border blueBorder;
     ContentView purpleContent;
     Label tapCountLabel;
     Label redGridLabel;
     Label greenGridLabel;
-    Label blueStackLabel;
+    Label blueBorderLabel;
     Label purpleContentLabel;
     int tapCount;
 
@@ -18,25 +18,25 @@ public class Issue17389 : TestContentPage
     {
         tapCountLabel = new Label { Text = "Tap count: 0", HorizontalOptions = LayoutOptions.Center };
 
-        redGrid = CreateBackgroundTestGrid(Colors.Red, true, "RedGrid", out redGridLabel);
-        greenGrid = CreateBackgroundTestGrid(Colors.Green, true, "GreenGrid", out greenGridLabel);
+        redGrid = CreateBackgroundTestGrid(Colors.Red, false, "RedGrid", out redGridLabel);
+        greenGrid = CreateBackgroundTestGrid(Colors.Green, false, "GreenGrid", out greenGridLabel);
 
-        blueStackLabel = new Label { Text = "Blue Stack (InputTransparent=True)", HorizontalOptions = LayoutOptions.Center, AutomationId = "BlueStack" };
-        blueStack = new StackLayout
+        blueBorderLabel = new Label { Text = "Blue Border (InputTransparent=False)", HorizontalOptions = LayoutOptions.Center, AutomationId = "BlueBorder" };
+        blueBorder = new Border
         {
             BackgroundColor = Colors.Blue,
-            InputTransparent = true,
+            InputTransparent = false,
             WidthRequest = 200,
             HeightRequest = 100,
-            Children = { blueStackLabel }
+            Content = blueBorderLabel
         };
-        AddTapGesture(blueStack);
+        AddTapGesture(blueBorder);
 
-        purpleContentLabel = new Label { Text = "Purple Content (InputTransparent=True)", HorizontalOptions = LayoutOptions.Center, AutomationId = "PurpleContent" };
+        purpleContentLabel = new Label { Text = "Purple Content (InputTransparent=False)", AutomationId = "PurpleContent" };
         purpleContent = new ContentView
         {
             BackgroundColor = Colors.Purple,
-            InputTransparent = true,
+            InputTransparent = false,
             WidthRequest = 200,
             HeightRequest = 100,
             Content = purpleContentLabel
@@ -77,7 +77,7 @@ public class Issue17389 : TestContentPage
                     },
                     redGrid,
                     greenGrid,
-                    blueStack,
+                    blueBorder,
                     purpleContent
                 }
             }
@@ -86,7 +86,7 @@ public class Issue17389 : TestContentPage
 
     Grid CreateBackgroundTestGrid(Color bgColor, bool inputTransparent, string labelText, out Label label)
     {
-        label = new Label { Text = $"{labelText} (InputTransparent=True)", HorizontalOptions = LayoutOptions.Center, AutomationId = $"{labelText}" };
+        label = new Label { Text = $"{labelText} (InputTransparent=False)", HorizontalOptions = LayoutOptions.Center, AutomationId = $"{labelText}" };
 
         Grid childGrid = new Grid
         {
@@ -124,14 +124,15 @@ public class Issue17389 : TestContentPage
 
     void ToggleInputTransparent()
     {
+        tapCountLabel.Text = $"Tap count: {0}";
         redGrid.InputTransparent = !redGrid.InputTransparent;
         greenGrid.InputTransparent = !greenGrid.InputTransparent;
-        blueStack.InputTransparent = !blueStack.InputTransparent;
+        blueBorder.InputTransparent = !blueBorder.InputTransparent;
         purpleContent.InputTransparent = !purpleContent.InputTransparent;
 
         redGridLabel.Text = $"Red Grid (InputTransparent={redGrid.InputTransparent})";
         greenGridLabel.Text = $"Green Grid (InputTransparent={greenGrid.InputTransparent})";
-        blueStackLabel.Text = $"Blue Stack (InputTransparent={blueStack.InputTransparent})";
+        blueBorderLabel.Text = $"Blue Border (InputTransparent={blueBorder.InputTransparent})";
         purpleContentLabel.Text = $"Purple Content (InputTransparent={purpleContent.InputTransparent})";
     }
 
@@ -139,7 +140,7 @@ public class Issue17389 : TestContentPage
     {
         redGrid.BackgroundColor = Colors.Orange;
         greenGrid.BackgroundColor = Colors.LightGreen;
-        blueStack.BackgroundColor = Colors.LightBlue;
+        blueBorder.BackgroundColor = Colors.LightBlue;
         purpleContent.BackgroundColor = Colors.Pink;
     }
 }
