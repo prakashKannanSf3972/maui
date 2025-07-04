@@ -209,12 +209,8 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 			}
 
 			base.ViewWillLayoutSubviews();
-			
-			if (needsCellLayout || // A cell changed its measure
-			    !_laidOut || // We have never laid out
-			    // With no cells, nothing will trigger a layout when bounds change,
-			    // but we still need to properly lay out supplementary views
-			    ItemsSource.ItemCount == 0)
+
+			if (needsCellLayout || !_laidOut)
 			{
 				// We don't want to mess up with ContentOffset while refreshing, given that's also gonna cause
 				// a change in the content's offset Y.
@@ -243,32 +239,24 @@ namespace Microsoft.Maui.Controls.Handlers.Items
 		void InvalidateLayoutIfItemsMeasureChanged()
 		{
 			var visibleCells = CollectionView.VisibleCells;
-			List<TemplatedCell> invalidatedCells = null;
+			List<NSIndexPath> invalidatedPaths = null;
 
 			var visibleCellsLength = visibleCells.Length;
 			for (int n = 0; n < visibleCellsLength; n++)
 			{
 				if (visibleCells[n] is TemplatedCell { MeasureInvalidated: true } cell)
 				{
-					invalidatedCells ??= [];
-					invalidatedCells.Add(cell);
+					invalidatedPaths ??= new List<NSIndexPath>(visibleCellsLength);
+					var path = CollectionView.IndexPathForCell(cell);
+					invalidatedPaths.Add(path);
 				}
 			}
 
-			if (invalidatedCells is not null)
+			if (invalidatedPaths != null)
 			{
-				// GridLayout has a special positioning override when there's only one item
-				// so we have to invalidate the layout entirely to trigger that special case.
-				if (ItemsSource.ItemCount == 1)
-				{
-					CollectionView.CollectionViewLayout.InvalidateLayout();
-				}
-				else
-				{
-					var layoutInvalidationContext = new UICollectionViewFlowLayoutInvalidationContext();
-					layoutInvalidationContext.InvalidateItems(invalidatedCells.Select(CollectionView.IndexPathForCell).ToArray());
-					CollectionView.CollectionViewLayout.InvalidateLayout(layoutInvalidationContext);
-				}
+				var layoutInvalidationContext = new UICollectionViewFlowLayoutInvalidationContext();
+				layoutInvalidationContext.InvalidateItems(invalidatedPaths.ToArray());
+				CollectionView.CollectionViewLayout.InvalidateLayout(layoutInvalidationContext);
 			}
 		}
 

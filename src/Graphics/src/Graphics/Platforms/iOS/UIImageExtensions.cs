@@ -27,7 +27,7 @@ namespace Microsoft.Maui.Graphics.Platform
 
 		public static UIImage ScaleImage(this UIImage target, CGSize size, bool disposeOriginal = false)
 		{
-			using (var renderer = new UIGraphicsImageRenderer(size))
+			using (var renderer = new UIGraphicsImageRenderer(target.Size))
 			{
 				var resultImage = renderer.CreateImage((UIGraphicsImageRendererContext imageContext) =>
 				{

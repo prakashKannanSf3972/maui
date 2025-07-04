@@ -556,10 +556,8 @@ namespace Microsoft.Maui.Platform
 			EventHandler<AView.ViewAttachedToWindowEventArgs>? routedEventHandler = null;
 			ActionDisposable? disposable = new ActionDisposable(() =>
 			{
-				if (routedEventHandler is not null && view.IsAlive())
-				{
+				if (routedEventHandler != null)
 					view.ViewAttachedToWindow -= routedEventHandler;
-				}
 			});
 
 			routedEventHandler = (_, __) =>
@@ -598,29 +596,16 @@ namespace Microsoft.Maui.Platform
 			EventHandler<AView.ViewDetachedFromWindowEventArgs>? routedEventHandler = null;
 			ActionDisposable? disposable = new ActionDisposable(() =>
 			{
-				if (routedEventHandler is not null)
+				if (routedEventHandler != null)
 					view.ViewDetachedFromWindow -= routedEventHandler;
 			});
 
-			routedEventHandler = (sender, args) =>
+			routedEventHandler = (_, __) =>
 			{
 				// This event seems to fire prior to the view actually being
 				// detached from the window
 				if (view.IsLoaded() && Looper.MyLooper() is Looper q)
 				{
-					// We unsubscribe here because if we wait for the looper
-					// to schedule the work the view might get disposed by the time
-					// the unsubscribe code runs
-					if (disposable is not null)
-					{
-						if (args.DetachedView.IsAlive())
-						{
-							args.DetachedView.ViewDetachedFromWindow -= routedEventHandler;
-						}
-
-						routedEventHandler = null;
-					}
-
 					new Handler(q).Post(() =>
 					{
 						if (disposable is not null)

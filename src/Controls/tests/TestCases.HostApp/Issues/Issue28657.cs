@@ -1,4 +1,4 @@
-﻿namespace Maui.Controls.Sample.Issues;
+﻿namespace Controls.TestCases.HostApp.Issues;
 
 [Issue(IssueTracker.Github, 28657, "iOS - Rotating the simulator would cause clipping on the description text", PlatformAffected.iOS)]
 class Issue28657 : ContentPage

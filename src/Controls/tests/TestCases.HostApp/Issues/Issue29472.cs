@@ -1,4 +1,4 @@
-﻿namespace Maui.Controls.Sample.Issues;
+﻿namespace Controls.TestCases.HostApp.Issues;
 
 [Issue(IssueTracker.Github, 29472, "ItemsSource is not dynamically cleared in the CarouselView", PlatformAffected.UWP)]
 public class Issue29472 : ContentPage

@@ -666,16 +666,16 @@ namespace Microsoft.Maui.Controls
 			ClearPlaceholderEnabledCore = ClearPlaceholderCommand.CanExecute(ClearPlaceholderCommandParameter);
 		}
 
-		internal WeakCommandSubscription ClearPlaceholderCommandSubscription { get; set; }
-
 		void OnClearPlaceholderCommandChanged(ICommand oldCommand, ICommand newCommand)
 		{
-			ClearPlaceholderCommandSubscription?.Dispose();
-			ClearPlaceholderCommandSubscription = null;
+			if (oldCommand != null)
+			{
+				oldCommand.CanExecuteChanged -= ClearPlaceholderCanExecuteChanged;
+			}
 
 			if (newCommand != null)
 			{
-				ClearPlaceholderCommandSubscription = new WeakCommandSubscription(this, newCommand, ClearPlaceholderCanExecuteChanged);
+				newCommand.CanExecuteChanged += ClearPlaceholderCanExecuteChanged;
 				ClearPlaceholderEnabledCore = ClearPlaceholderCommand.CanExecute(ClearPlaceholderCommandParameter);
 			}
 			else
@@ -690,16 +690,16 @@ namespace Microsoft.Maui.Controls
 				ClearPlaceholderEnabledCore = ClearPlaceholderCommand.CanExecute(CommandParameter);
 		}
 
-		internal WeakCommandSubscription CommandSubscription { get; set; }
-
 		void OnCommandChanged(ICommand oldCommand, ICommand newCommand)
 		{
-			CommandSubscription?.Dispose();
-			CommandSubscription = null;
-
-			if (newCommand is not null)
+			if (oldCommand != null)
 			{
-				CommandSubscription = new WeakCommandSubscription(this, newCommand, CanExecuteChanged);
+				oldCommand.CanExecuteChanged -= CanExecuteChanged;
+			}
+
+			if (newCommand != null)
+			{
+				newCommand.CanExecuteChanged += CanExecuteChanged;
 				IsSearchEnabledCore = Command.CanExecute(CommandParameter);
 			}
 			else

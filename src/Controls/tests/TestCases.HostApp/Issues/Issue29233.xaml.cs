@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Maui.Controls.Sample.Issues;
+namespace Controls.TestCases.HostApp.Issues;
 
 [Issue(IssueTracker.Github, 29233, "Android WebView Navigated is fired without setting source", PlatformAffected.Android)]
 public partial class Issue29233 : ContentPage

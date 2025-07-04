@@ -1,4 +1,4 @@
-﻿namespace Maui.Controls.Sample.Issues;
+﻿namespace Controls.TestCases.HostApp.Issues;
 
 [Issue(IssueTracker.Github, 20419, "Argument Exception raised when the GetStringSize method of ICanvas called with default font", PlatformAffected.UWP)]
 public class Issue20419 : ContentPage

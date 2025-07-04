@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace Maui.Controls.Sample.Issues;
+namespace Controls.TestCases.HostApp.Issues;
 
 [Issue(IssueTracker.Github, 7144, "IndicatorView using templated icons not working", PlatformAffected.UWP)]
 public class Issue7144 : ContentPage

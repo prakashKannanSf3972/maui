@@ -1,4 +1,4 @@
-namespace Maui.Controls.Sample.Issues;
+namespace Controls.TestCases.HostApp.Issues;
 
 [Issue(IssueTracker.Github, 27803, "DatePicker default format on iOS", PlatformAffected.iOS)]
 public partial class Issue27803 : ContentPage
