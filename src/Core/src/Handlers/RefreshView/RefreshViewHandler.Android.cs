@@ -1,4 +1,5 @@
-﻿using Microsoft.Maui.Graphics;
+﻿using System;
+using Microsoft.Maui.Graphics;
 
 namespace Microsoft.Maui.Handlers
 {
@@ -13,6 +14,11 @@ namespace Microsoft.Maui.Handlers
 		{
 			base.ConnectHandler(platformView);
 			platformView.Refresh += OnSwipeRefresh;
+
+			if (platformView is ICrossPlatformLayoutBacking platformRefreshView)
+			{
+				platformRefreshView.CrossPlatformLayout = (ICrossPlatformLayout?)VirtualView;
+			}
 		}
 
 		void OnSwipeRefresh(object? sender, System.EventArgs e)
@@ -22,6 +28,11 @@ namespace Microsoft.Maui.Handlers
 
 		protected override void DisconnectHandler(MauiSwipeRefreshLayout platformView)
 		{
+			if (platformView is ICrossPlatformLayoutBacking platformRefreshView)
+			{
+				platformRefreshView.CrossPlatformLayout = null;
+			}
+
 			// If we're being disconnected from the xplat element, then we should no longer be managing its children
 			platformView.Refresh -= OnSwipeRefresh;
 			platformView.UpdateContent(null, null);

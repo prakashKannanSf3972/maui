@@ -14,7 +14,7 @@ using AWebView = Android.Webkit.WebView;
 
 namespace Microsoft.Maui.Platform
 {
-	public class MauiSwipeRefreshLayout : SwipeRefreshLayout
+	public class MauiSwipeRefreshLayout : SwipeRefreshLayout, ICrossPlatformLayoutBacking
 	{
 		AView? _contentView;
 
@@ -25,6 +25,20 @@ namespace Microsoft.Maui.Platform
 			// https://issuetracker.google.com/issues/110463864
 			// It looks like this issue is fixed on the main branch of Android but it hasn't made its way into the packages yet
 			SetProgressViewOffset(true, ProgressViewStartOffset, ProgressViewEndOffset - Math.Abs(ProgressViewStartOffset));
+		}
+
+#pragma warning disable RS0016 // Add public types and members to the declared API
+		public ICrossPlatformLayout? CrossPlatformLayout { get; set; }
+#pragma warning restore RS0016 // Add public types and members to the declared API
+
+		Graphics.Size CrossPlatformMeasure(double widthConstraint, double heightConstraint)
+		{
+			return CrossPlatformLayout?.CrossPlatformMeasure(widthConstraint, heightConstraint) ?? Graphics.Size.Zero;
+		}
+
+		Graphics.Size CrossPlatformArrange(Graphics.Rect bounds)
+		{
+			return CrossPlatformLayout?.CrossPlatformArrange(bounds) ?? Graphics.Size.Zero;
 		}
 
 		public void UpdateContent(IView? content, IMauiContext? mauiContext)
@@ -53,6 +67,67 @@ namespace Microsoft.Maui.Platform
 
 				return null;
 			}
+		}
+
+#pragma warning disable RS0016 // Add public types and members to the declared API
+		public override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
+#pragma warning restore RS0016 // Add public types and members to the declared API
+		{
+			if (CrossPlatformMeasure == null)
+			{
+				base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
+				return;
+			}
+
+			var context = Context;
+			if (context == null)
+			{
+				base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
+				return;
+			}
+
+			var deviceIndependentWidth = widthMeasureSpec.ToDouble(context);
+			var deviceIndependentHeight = heightMeasureSpec.ToDouble(context);
+
+			var widthMode = MeasureSpec.GetMode(widthMeasureSpec);
+			var heightMode = MeasureSpec.GetMode(heightMeasureSpec);
+
+			var measure = CrossPlatformMeasure(deviceIndependentWidth, deviceIndependentHeight);
+
+			// If the measure spec was exact, we should return the explicit size value, even if the content
+			// measure came out to a different size
+			var width = widthMode == MeasureSpecMode.Exactly ? deviceIndependentWidth : measure.Width;
+			var height = heightMode == MeasureSpecMode.Exactly ? deviceIndependentHeight : measure.Height;
+
+			var platformWidth = context.ToPixels(width);
+			var platformHeight = context.ToPixels(height);
+
+			// Minimum values win over everything
+			platformWidth = Math.Max(MinimumWidth, platformWidth);
+			platformHeight = Math.Max(MinimumHeight, platformHeight);
+
+			SetMeasuredDimension((int)platformWidth, (int)platformHeight);
+		}
+
+#pragma warning disable RS0016 // Add public types and members to the declared API
+		protected override void OnLayout(bool changed, int left, int top, int right, int bottom)
+#pragma warning restore RS0016 // Add public types and members to the declared API
+		{
+			if (CrossPlatformArrange == null)
+			{
+				base.OnLayout(changed, left, top, right, bottom);
+				return;
+			}
+
+			var context = Context;
+			if (context == null)
+			{
+				base.OnLayout(changed, left, top, right, bottom);
+				return;
+			}
+
+			var destination = context.ToCrossPlatformRectInReferenceFrame(left, top, right, bottom);
+			CrossPlatformArrange(destination);
 		}
 
 		public override bool CanChildScrollUp()
