@@ -142,17 +142,6 @@ namespace Microsoft.Maui.Handlers
 				var platformContent = content.ToPlatform(mauiContext);
 				platformContent.Tag = ContentTag;
 				platformView.AddSubview(platformContent);
-
-				// Force layout invalidation to ensure content is properly rendered
-				// This is essential for dynamic content changes on iOS
-				if (platformView is ICrossPlatformLayoutBacking backing && backing.CrossPlatformLayout is not null)
-				{
-					// Invalidate the layout cache to force remeasure
-					if (platformView is IPlatformMeasureInvalidationController invalidationController)
-					{
-						invalidationController.InvalidateMeasure(isPropagating: false);
-					}
-				}
 			}
 		}
 
