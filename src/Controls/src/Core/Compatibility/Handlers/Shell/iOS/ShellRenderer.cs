@@ -134,6 +134,7 @@ namespace Microsoft.Maui.Controls.Handlers.Compatibility
 		[Obsolete]
 		public virtual void SetElementSize(Size size)
 		{
+			Element.Arrange(new Rect(Element.X, Element.Y, View.Bounds.Width, View.Bounds.Height));
 		}
 
 		public override void ViewDidLayoutSubviews()
@@ -141,6 +142,8 @@ namespace Microsoft.Maui.Controls.Handlers.Compatibility
 			base.ViewDidLayoutSubviews();
 			if (_currentShellItemRenderer != null)
 				_currentShellItemRenderer.ViewController.View.Frame = View.Bounds;
+
+			Element.Arrange(new Rect(Element.X, Element.Y, View.Bounds.Width, View.Bounds.Height));
 		}
 
 		public override void ViewDidLoad()
