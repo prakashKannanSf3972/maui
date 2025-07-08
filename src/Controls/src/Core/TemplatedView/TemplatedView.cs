@@ -172,6 +172,7 @@ namespace Microsoft.Maui.Controls
 		protected override void OnSizeAllocated(double width, double height)
 		{
 			base.OnSizeAllocated(width, height);
+			this.ArrangeContent(new Rect(0, 0, width, height));
 		}
 
 
