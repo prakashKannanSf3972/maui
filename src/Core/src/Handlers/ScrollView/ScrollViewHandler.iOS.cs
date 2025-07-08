@@ -143,13 +143,15 @@ namespace Microsoft.Maui.Handlers
 				platformContent.Tag = ContentTag;
 				platformView.AddSubview(platformContent);
 
-				// Fix for dynamic ScrollView content rendering on iOS
-				// Issue: After PR #29281, MauiScrollView only re-measures content when the frame changes.
-				// When content is dynamically assigned, the ScrollView frame doesn't change, so the new
-				// content is added to the view hierarchy but never measured/arranged, appearing invisible.
-				if (scrollView.Content is IView view)
+				// Force layout invalidation to ensure content is properly rendered
+				// This is essential for dynamic content changes on iOS
+				if (platformView is ICrossPlatformLayoutBacking backing && backing.CrossPlatformLayout is not null)
 				{
-					view.InvalidateMeasure();
+					// Invalidate the layout cache to force remeasure
+					if (platformView is IPlatformMeasureInvalidationController invalidationController)
+					{
+						invalidationController.InvalidateMeasure(isPropagating: false);
+					}
 				}
 			}
 		}
