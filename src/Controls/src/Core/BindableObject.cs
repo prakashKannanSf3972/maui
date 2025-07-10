@@ -434,118 +434,33 @@ namespace Microsoft.Maui.Controls
 
 		internal virtual void OnRemoveDynamicResource(BindableProperty property)
 		{
+			_dynamicResources?.Remove(property);
+			if (_dynamicResources?.Count == 0)
+				_dynamicResources = null;
 		}
 
-		// Track dynamic resource keys for BindableObject instances
+		// MINIMAL FIX: Track dynamic resources and handle changes
 		Dictionary<BindableProperty, (string, SetterSpecificity)> _dynamicResources;
-
-		// Reference to parent Element for resource resolution
-		WeakReference<Element> _parentElement;
-
-		Dictionary<BindableProperty, (string, SetterSpecificity)> DynamicResources => _dynamicResources ?? (_dynamicResources = new Dictionary<BindableProperty, (string, SetterSpecificity)>());
 
 		internal virtual void OnSetDynamicResource(BindableProperty property, string key, SetterSpecificity specificity)
 		{
-			// Store the dynamic resource mapping (same pattern as Element)
-			if (!DynamicResources.TryGetValue(property, out var existing) || existing.Item2 <= specificity)
-			{
-				DynamicResources[property] = (key, specificity);
-			}
-
-			// Mark the property context as dynamic resource
-			var context = GetOrCreateContext(property);
-			context.Attributes |= BindableContextAttributes.IsDynamicResource;
-
-			// Try to resolve the resource immediately from any available resource provider
-			if (TryResolveResource(key, out var value))
-			{
-				SetValueCore(property, value, SetValueFlags.ClearOneWayBindings | SetValueFlags.ClearTwoWayBindings, SetValuePrivateFlags.Default, specificity);
-			}
+			// Store the mapping like Element does - but only if it's a higher or equal specificity
+			_dynamicResources ??= new Dictionary<BindableProperty, (string, SetterSpecificity)>();
+			if (!_dynamicResources.TryGetValue(property, out var existing) || existing.Item2 <= specificity)
+				_dynamicResources[property] = (key, specificity);
 		}
 
-		bool TryResolveResource(string key, out object value)
+		// Handle resource changes from parent Element
+		internal void OnResourceChangedFromParent(string key, object value)
 		{
-			value = null;
-
-			// First, try to resolve from the parent Element if we have one
-			var parentElement = GetParentElement();
-			if (parentElement != null)
+			if (_dynamicResources?.Count > 0)
 			{
-				return parentElement.TryGetResource(key, out value);
-			}
-
-			// If no parent Element, try Application.Current as fallback
-			if (Application.Current != null)
-			{
-				return Application.Current.TryGetResource(key, out value);
-			}
-
-			return false;
-		}
-
-		Element GetParentElement()
-		{
-			// First check if we have a directly set parent element
-			if (_parentElement != null && _parentElement.TryGetTarget(out var parent))
-			{
-				return parent;
-			}
-
-			// Fallback to the old approach of searching through binding context
-			return FindResourceProvider();
-		}
-
-		Element FindResourceProvider()
-		{
-			// Look for a parent Element that can provide resources through binding context chain
-			var current = this;
-			while (current != null)
-			{
-				if (current is Element element)
+				foreach (var kvp in _dynamicResources.ToList())
 				{
-					return element;
-				}
-
-				// Move up through binding context
-				var bindingContext = current.BindingContext;
-				if (bindingContext is BindableObject bindableContext && bindingContext != current)
-				{
-					current = bindableContext;
-				}
-				else
-				{
-					break;
-				}
-			}
-
-			return null;
-		}
-
-		// Internal method to set the parent element (called by Element when BindableObject is set as property)
-		internal void SetParentElement(Element parentElement)
-		{
-			if (parentElement == null)
-			{
-				_parentElement = null;
-			}
-			else
-			{
-				_parentElement = new WeakReference<Element>(parentElement);
-			}
-		}
-
-		// Internal method to handle resource changes propagated from parent Element
-		internal void OnResourceChangedFromParent(string key, object newValue)
-		{
-			if (_dynamicResources == null)
-				return;
-
-			// Update all properties that depend on this resource key
-			foreach (var kvp in _dynamicResources.ToList())
-			{
-				if (kvp.Value.Item1 == key)
-				{
-					SetValueCore(kvp.Key, newValue, SetValueFlags.ClearOneWayBindings | SetValueFlags.ClearTwoWayBindings, SetValuePrivateFlags.Default, kvp.Value.Item2);
+					if (kvp.Value.Item1 == key)
+					{
+						SetValueCore(kvp.Key, value, SetValueFlags.ClearOneWayBindings | SetValueFlags.ClearTwoWayBindings, SetValuePrivateFlags.Default, kvp.Value.Item2);
+					}
 				}
 			}
 		}

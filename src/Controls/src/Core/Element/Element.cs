@@ -56,7 +56,8 @@ namespace Microsoft.Maui.Controls
 		/// <summary>Bindable property for <see cref="ClassId"/>.</summary>
 		public static readonly BindableProperty ClassIdProperty = BindableProperty.Create(nameof(ClassId), typeof(string), typeof(Element), null);
 
-		IList<BindableObject> _bindableResources;
+		// Track BindableObject values that might need resource change notifications using WeakReferences
+		List<WeakReference> _bindableObjectProperties;
 
 		List<Action<object, ResourcesChangedEventArgs>> _changeHandlers;
 
@@ -577,11 +578,8 @@ namespace Microsoft.Maui.Controls
 				SetChildInheritedBindingContext((Element)child, bc);
 			});
 
-			if (_bindableResources != null)
-				foreach (BindableObject item in _bindableResources)
-				{
-					SetInheritedBindingContext(item, BindingContext);
-				}
+			// Propagate binding context to tracked BindableObject properties
+			PropagateBindingContextToTrackedObjects();
 
 			base.OnBindingContextChanged();
 		}
@@ -639,38 +637,30 @@ namespace Microsoft.Maui.Controls
 				_pendingHandlerUpdatesFromBPSet.Add(property.PropertyName);
 			}
 
-			// Track BindableObject property values for resource propagation
-			TrackBindableObjectPropertyValues(original, value);
+			// Track BindableObject properties for resource change notifications  
+			if (changed)
+			{
+				TrackBindableObjectPropertyChange(original, value);
+			}
 
 			base.OnBindablePropertySet(property, original, value, changed, willFirePropertyChanged);
 			_pendingHandlerUpdatesFromBPSet.Remove(property.PropertyName);
 			UpdateHandlerValue(property.PropertyName, changed);
 		}
 
-		void TrackBindableObjectPropertyValues(object original, object value)
+		void TrackBindableObjectPropertyChange(object original, object value)
 		{
-			// Initialize _bindableResources if needed
-			_bindableResources ??= new List<BindableObject>();
-
-			// Remove the old BindableObject if it exists
+			// Remove old BindableObject tracking if it exists
 			if (original is BindableObject oldBindableObject && !(oldBindableObject is Element))
 			{
-				_bindableResources.Remove(oldBindableObject);
-				// Clear parent element reference
-				oldBindableObject.SetParentElement(null);
+				RemoveFromTrackedObjects(oldBindableObject);
 			}
 
-			// Add the new BindableObject if it exists and is not an Element
+			// Add new BindableObject tracking if it exists and is not an Element
 			if (value is BindableObject newBindableObject && !(newBindableObject is Element))
 			{
-				if (!_bindableResources.Contains(newBindableObject))
-				{
-					_bindableResources.Add(newBindableObject);
-					// Set the inherited binding context for the new BindableObject
-					SetInheritedBindingContext(newBindableObject, BindingContext);
-				}
-				// Set parent element reference for resource resolution
-				newBindableObject.SetParentElement(this);
+				TrackBindableObjectForResources(newBindableObject);
+				SetInheritedBindingContext(newBindableObject, BindingContext);
 			}
 		}
 
@@ -783,8 +773,7 @@ namespace Microsoft.Maui.Controls
 					handler(this, new ResourcesChangedEventArgs(values));
 			if (_dynamicResources == null)
 				return;
-			if (_bindableResources == null)
-				_bindableResources = new List<BindableObject>();
+
 			foreach (KeyValuePair<string, object> value in values)
 			{
 				List<(BindableProperty, SetterSpecificity)> changedResources = null;
@@ -807,33 +796,102 @@ namespace Microsoft.Maui.Controls
 				var bindableObject = value.Value as BindableObject;
 				if (bindableObject != null && (bindableObject as Element)?.Parent == null)
 				{
-					if (!_bindableResources.Contains(bindableObject))
-						_bindableResources.Add(bindableObject);
 					SetInheritedBindingContext(bindableObject, BindingContext);
+					// Track this BindableObject for resource change notifications
+					TrackBindableObjectForResources(bindableObject);
 				}
 			}
 
-			// Propagate resource changes to tracked BindableObject instances
-			if (_bindableResources != null)
+			// Notify tracked BindableObject properties about resource changes
+			NotifyBindableObjectPropertiesOfResourceChanges(values);
+		}
+
+		void TrackBindableObjectForResources(BindableObject bindableObject)
+		{
+			if (bindableObject == null)
+				return;
+
+			_bindableObjectProperties ??= new List<WeakReference>();
+
+			// Check if we're already tracking this object (avoid duplicates)
+			bool alreadyTracked = false;
+			for (int i = _bindableObjectProperties.Count - 1; i >= 0; i--)
 			{
-				foreach (var bindableResource in _bindableResources.ToList())
+				var weakRef = _bindableObjectProperties[i];
+				if (weakRef.Target == bindableObject)
 				{
-					// Only propagate to non-Element BindableObject instances
-					if (bindableResource is not Element)
+					alreadyTracked = true;
+					break;
+				}
+				else if (!weakRef.IsAlive)
+				{
+					// Clean up dead references
+					_bindableObjectProperties.RemoveAt(i);
+				}
+			}
+
+			if (!alreadyTracked)
+			{
+				_bindableObjectProperties.Add(new WeakReference(bindableObject));
+			}
+		}
+
+		void RemoveFromTrackedObjects(BindableObject bindableObject)
+		{
+			if (_bindableObjectProperties?.Count > 0)
+			{
+				for (int i = _bindableObjectProperties.Count - 1; i >= 0; i--)
+				{
+					var weakRef = _bindableObjectProperties[i];
+					if (weakRef.Target == bindableObject || !weakRef.IsAlive)
 					{
-						PropagateResourceChangesToBindableObject(bindableResource, values);
+						_bindableObjectProperties.RemoveAt(i);
 					}
 				}
 			}
 		}
 
-		void PropagateResourceChangesToBindableObject(BindableObject bindableObject, IEnumerable<KeyValuePair<string, object>> values)
+		void NotifyBindableObjectPropertiesOfResourceChanges(IEnumerable<KeyValuePair<string, object>> values)
 		{
-			// For each resource value that changed, propagate to the BindableObject
-			foreach (var value in values)
+			if (_bindableObjectProperties?.Count > 0)
 			{
-				// Call the new method we added to BindableObject to handle resource changes
-				bindableObject.OnResourceChangedFromParent(value.Key, value.Value);
+				foreach (var kvp in values)
+				{
+					// Notify all tracked BindableObject properties
+					for (int i = _bindableObjectProperties.Count - 1; i >= 0; i--)
+					{
+						var weakRef = _bindableObjectProperties[i];
+						if (weakRef.Target is BindableObject bindableObj)
+						{
+							bindableObj.OnResourceChangedFromParent(kvp.Key, kvp.Value);
+						}
+						else
+						{
+							// Clean up dead references
+							_bindableObjectProperties.RemoveAt(i);
+						}
+					}
+				}
+			}
+		}
+
+		void PropagateBindingContextToTrackedObjects()
+		{
+			if (_bindableObjectProperties?.Count > 0)
+			{
+				for (int i = _bindableObjectProperties.Count - 1; i >= 0; i--)
+				{
+					var weakRef = _bindableObjectProperties[i];
+					if (weakRef.Target is BindableObject bindableObj)
+					{
+						SetInheritedBindingContext(bindableObj, BindingContext);
+					}
+					else
+					{
+						// Clean up dead references
+						_bindableObjectProperties.RemoveAt(i);
+					}
+				}
 			}
 		}
 
