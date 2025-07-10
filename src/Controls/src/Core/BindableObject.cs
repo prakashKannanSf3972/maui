@@ -437,20 +437,19 @@ namespace Microsoft.Maui.Controls
 		}
 
 		// Track dynamic resource keys for BindableObject instances
-		Dictionary<BindableProperty, (string key, SetterSpecificity specificity)> _dynamicResources;
+		Dictionary<BindableProperty, (string, SetterSpecificity)> _dynamicResources;
 
 		// Reference to parent Element for resource resolution
 		WeakReference<Element> _parentElement;
 
+		Dictionary<BindableProperty, (string, SetterSpecificity)> DynamicResources => _dynamicResources ?? (_dynamicResources = new Dictionary<BindableProperty, (string, SetterSpecificity)>());
+
 		internal virtual void OnSetDynamicResource(BindableProperty property, string key, SetterSpecificity specificity)
 		{
-			// Initialize dynamic resources dictionary if needed
-			_dynamicResources ??= new Dictionary<BindableProperty, (string, SetterSpecificity)>();
-
-			// Store the dynamic resource mapping
-			if (!_dynamicResources.TryGetValue(property, out var existing) || existing.specificity <= specificity)
+			// Store the dynamic resource mapping (same pattern as Element)
+			if (!DynamicResources.TryGetValue(property, out var existing) || existing.Item2 <= specificity)
 			{
-				_dynamicResources[property] = (key, specificity);
+				DynamicResources[property] = (key, specificity);
 			}
 
 			// Mark the property context as dynamic resource
@@ -544,9 +543,9 @@ namespace Microsoft.Maui.Controls
 			// Update all properties that depend on this resource key
 			foreach (var kvp in _dynamicResources.ToList())
 			{
-				if (kvp.Value.key == key)
+				if (kvp.Value.Item1 == key)
 				{
-					SetValueCore(kvp.Key, newValue, SetValueFlags.ClearOneWayBindings | SetValueFlags.ClearTwoWayBindings, SetValuePrivateFlags.Default, kvp.Value.specificity);
+					SetValueCore(kvp.Key, newValue, SetValueFlags.ClearOneWayBindings | SetValueFlags.ClearTwoWayBindings, SetValuePrivateFlags.Default, kvp.Value.Item2);
 				}
 			}
 		}
