@@ -436,8 +436,119 @@ namespace Microsoft.Maui.Controls
 		{
 		}
 
+		// Track dynamic resource keys for BindableObject instances
+		Dictionary<BindableProperty, (string key, SetterSpecificity specificity)> _dynamicResources;
+
+		// Reference to parent Element for resource resolution
+		WeakReference<Element> _parentElement;
+
 		internal virtual void OnSetDynamicResource(BindableProperty property, string key, SetterSpecificity specificity)
 		{
+			// Initialize dynamic resources dictionary if needed
+			_dynamicResources ??= new Dictionary<BindableProperty, (string, SetterSpecificity)>();
+
+			// Store the dynamic resource mapping
+			if (!_dynamicResources.TryGetValue(property, out var existing) || existing.specificity <= specificity)
+			{
+				_dynamicResources[property] = (key, specificity);
+			}
+
+			// Mark the property context as dynamic resource
+			var context = GetOrCreateContext(property);
+			context.Attributes |= BindableContextAttributes.IsDynamicResource;
+
+			// Try to resolve the resource immediately from any available resource provider
+			if (TryResolveResource(key, out var value))
+			{
+				SetValueCore(property, value, SetValueFlags.ClearOneWayBindings | SetValueFlags.ClearTwoWayBindings, SetValuePrivateFlags.Default, specificity);
+			}
+		}
+
+		bool TryResolveResource(string key, out object value)
+		{
+			value = null;
+
+			// First, try to resolve from the parent Element if we have one
+			var parentElement = GetParentElement();
+			if (parentElement != null)
+			{
+				return parentElement.TryGetResource(key, out value);
+			}
+
+			// If no parent Element, try Application.Current as fallback
+			if (Application.Current != null)
+			{
+				return Application.Current.TryGetResource(key, out value);
+			}
+
+			return false;
+		}
+
+		Element GetParentElement()
+		{
+			// First check if we have a directly set parent element
+			if (_parentElement != null && _parentElement.TryGetTarget(out var parent))
+			{
+				return parent;
+			}
+
+			// Fallback to the old approach of searching through binding context
+			return FindResourceProvider();
+		}
+
+		Element FindResourceProvider()
+		{
+			// Look for a parent Element that can provide resources through binding context chain
+			var current = this;
+			while (current != null)
+			{
+				if (current is Element element)
+				{
+					return element;
+				}
+
+				// Move up through binding context
+				var bindingContext = current.BindingContext;
+				if (bindingContext is BindableObject bindableContext && bindingContext != current)
+				{
+					current = bindableContext;
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			return null;
+		}
+
+		// Internal method to set the parent element (called by Element when BindableObject is set as property)
+		internal void SetParentElement(Element parentElement)
+		{
+			if (parentElement == null)
+			{
+				_parentElement = null;
+			}
+			else
+			{
+				_parentElement = new WeakReference<Element>(parentElement);
+			}
+		}
+
+		// Internal method to handle resource changes propagated from parent Element
+		internal void OnResourceChangedFromParent(string key, object newValue)
+		{
+			if (_dynamicResources == null)
+				return;
+
+			// Update all properties that depend on this resource key
+			foreach (var kvp in _dynamicResources.ToList())
+			{
+				if (kvp.Value.key == key)
+				{
+					SetValueCore(kvp.Key, newValue, SetValueFlags.ClearOneWayBindings | SetValueFlags.ClearTwoWayBindings, SetValuePrivateFlags.Default, kvp.Value.specificity);
+				}
+			}
 		}
 
 		internal void RemoveDynamicResource(BindableProperty property)

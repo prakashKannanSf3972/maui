@@ -639,10 +639,39 @@ namespace Microsoft.Maui.Controls
 				_pendingHandlerUpdatesFromBPSet.Add(property.PropertyName);
 			}
 
+			// Track BindableObject property values for resource propagation
+			TrackBindableObjectPropertyValues(original, value);
+
 			base.OnBindablePropertySet(property, original, value, changed, willFirePropertyChanged);
 			_pendingHandlerUpdatesFromBPSet.Remove(property.PropertyName);
 			UpdateHandlerValue(property.PropertyName, changed);
+		}
 
+		void TrackBindableObjectPropertyValues(object original, object value)
+		{
+			// Initialize _bindableResources if needed
+			_bindableResources ??= new List<BindableObject>();
+
+			// Remove the old BindableObject if it exists
+			if (original is BindableObject oldBindableObject && !(oldBindableObject is Element))
+			{
+				_bindableResources.Remove(oldBindableObject);
+				// Clear parent element reference
+				oldBindableObject.SetParentElement(null);
+			}
+
+			// Add the new BindableObject if it exists and is not an Element
+			if (value is BindableObject newBindableObject && !(newBindableObject is Element))
+			{
+				if (!_bindableResources.Contains(newBindableObject))
+				{
+					_bindableResources.Add(newBindableObject);
+					// Set the inherited binding context for the new BindableObject
+					SetInheritedBindingContext(newBindableObject, BindingContext);
+				}
+				// Set parent element reference for resource resolution
+				newBindableObject.SetParentElement(this);
+			}
 		}
 
 		/// <summary>Method that is called when a bound property is changed.</summary>
@@ -782,6 +811,29 @@ namespace Microsoft.Maui.Controls
 						_bindableResources.Add(bindableObject);
 					SetInheritedBindingContext(bindableObject, BindingContext);
 				}
+			}
+
+			// Propagate resource changes to tracked BindableObject instances
+			if (_bindableResources != null)
+			{
+				foreach (var bindableResource in _bindableResources.ToList())
+				{
+					// Only propagate to non-Element BindableObject instances
+					if (bindableResource is not Element)
+					{
+						PropagateResourceChangesToBindableObject(bindableResource, values);
+					}
+				}
+			}
+		}
+
+		void PropagateResourceChangesToBindableObject(BindableObject bindableObject, IEnumerable<KeyValuePair<string, object>> values)
+		{
+			// For each resource value that changed, propagate to the BindableObject
+			foreach (var value in values)
+			{
+				// Call the new method we added to BindableObject to handle resource changes
+				bindableObject.OnResourceChangedFromParent(value.Key, value.Value);
 			}
 		}
 
