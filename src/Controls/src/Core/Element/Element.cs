@@ -289,14 +289,14 @@ namespace Microsoft.Maui.Controls
 				return;
 
 			_childBindableObjects ??= new List<WeakReference>();
-			
+
 			// Check if it's already added (to avoid duplicates)
 			foreach (var wr in _childBindableObjects)
 			{
 				if (ReferenceEquals(wr.Target, bindableObject))
 					return;
 			}
-			
+
 			_childBindableObjects.Add(new WeakReference(bindableObject));
 		}
 
@@ -839,7 +839,7 @@ namespace Microsoft.Maui.Controls
 							_childBindableObjects.RemoveAt(i);
 							continue;
 						}
-						
+
 						// Notify the child BindableObject about the resource change
 						target.OnParentResourceChanged(value.Key, value.Value);
 					}
