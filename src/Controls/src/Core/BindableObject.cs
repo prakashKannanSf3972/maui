@@ -42,6 +42,8 @@ namespace Microsoft.Maui.Controls
 		readonly Dictionary<BindableProperty, BindablePropertyContext> _properties = new Dictionary<BindableProperty, BindablePropertyContext>(4);
 		bool _applying;
 		WeakReference _inheritedContext;
+		WeakReference _logicalParent;
+		Dictionary<BindableProperty, string> _dynamicResources;
 
 		/// <summary>Bindable property for <see cref="BindingContext"/>.</summary>
 		public static readonly BindableProperty BindingContextProperty =
@@ -434,10 +436,31 @@ namespace Microsoft.Maui.Controls
 
 		internal virtual void OnRemoveDynamicResource(BindableProperty property)
 		{
+			// Remove from tracking
+			if (!(this is Element))
+			{
+				_dynamicResources?.Remove(property);
+			}
 		}
 
 		internal virtual void OnSetDynamicResource(BindableProperty property, string key, SetterSpecificity specificity)
 		{
+			// Track the dynamic resource for future updates
+			if (!(this is Element))
+			{
+				_dynamicResources ??= new Dictionary<BindableProperty, string>();
+				_dynamicResources[property] = key;
+			}
+
+			// Try to resolve the resource through the logical parent if this is not an Element
+			if (!(this is Element) && _logicalParent?.Target is Element parent)
+			{
+				// Use the parent's resource resolution capability
+				if (parent.TryGetResource(key, out var value))
+				{
+					SetValue(property, value, specificity);
+				}
+			}
 		}
 
 		internal void RemoveDynamicResource(BindableProperty property)
@@ -828,6 +851,47 @@ namespace Microsoft.Maui.Controls
 				throw new ArgumentException($"Value is an invalid value for {property.PropertyName}", nameof(currentValue));
 
 			property.CoerceValue?.Invoke(this, currentValue);
+		}
+
+		/// <summary>
+		/// Sets the logical parent element for this BindableObject.
+		/// </summary>
+		/// <param name="parent">The parent Element to set.</param>
+		internal void SetLogicalParent(Element parent)
+		{
+			if (parent == null)
+				_logicalParent = null;
+			else
+				_logicalParent = new WeakReference(parent);
+		}
+
+		/// <summary>
+		/// Gets the logical parent element for this BindableObject.
+		/// </summary>
+		/// <returns>The parent Element, or null if not set or collected.</returns>
+		internal Element GetLogicalParent()
+		{
+			return _logicalParent?.Target as Element;
+		}
+
+		/// <summary>
+		/// Handles resource changes for BindableObjects that have dynamic resources.
+		/// </summary>
+		/// <param name="changedResourceKey">The key of the resource that changed.</param>
+		/// <param name="newValue">The new value of the resource.</param>
+		internal void OnParentResourceChanged(string changedResourceKey, object newValue)
+		{
+			if (_dynamicResources == null)
+				return;
+
+			// Update any properties that are bound to the changed resource
+			foreach (var kvp in _dynamicResources)
+			{
+				if (kvp.Value == changedResourceKey)
+				{
+					SetValue(kvp.Key, newValue, SetterSpecificity.DynamicResourceSetter);
+				}
+			}
 		}
 
 		[Flags]

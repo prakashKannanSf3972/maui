@@ -57,6 +57,7 @@ namespace Microsoft.Maui.Controls
 		public static readonly BindableProperty ClassIdProperty = BindableProperty.Create(nameof(ClassId), typeof(string), typeof(Element), null);
 
 		IList<BindableObject> _bindableResources;
+		List<WeakReference> _childBindableObjects;
 
 		List<Action<object, ResourcesChangedEventArgs>> _changeHandlers;
 
@@ -276,6 +277,46 @@ namespace Microsoft.Maui.Controls
 			OnChildRemoved(element, index);
 
 			return true;
+		}
+
+		/// <summary>
+		/// Adds a BindableObject to the child BindableObject collection for resource change tracking.
+		/// </summary>
+		/// <param name="bindableObject">The BindableObject to add.</param>
+		internal void AddChildBindableObject(BindableObject bindableObject)
+		{
+			if (bindableObject == null)
+				return;
+
+			_childBindableObjects ??= new List<WeakReference>();
+			
+			// Check if it's already added (to avoid duplicates)
+			foreach (var wr in _childBindableObjects)
+			{
+				if (ReferenceEquals(wr.Target, bindableObject))
+					return;
+			}
+			
+			_childBindableObjects.Add(new WeakReference(bindableObject));
+		}
+
+		/// <summary>
+		/// Removes a BindableObject from the child BindableObject collection.
+		/// </summary>
+		/// <param name="bindableObject">The BindableObject to remove.</param>
+		internal void RemoveChildBindableObject(BindableObject bindableObject)
+		{
+			if (bindableObject == null || _childBindableObjects == null)
+				return;
+
+			for (int i = _childBindableObjects.Count - 1; i >= 0; i--)
+			{
+				var target = _childBindableObjects[i].Target;
+				if (target == null || ReferenceEquals(target, bindableObject))
+				{
+					_childBindableObjects.RemoveAt(i);
+				}
+			}
 		}
 
 		internal bool Owned { get; set; }
@@ -781,6 +822,27 @@ namespace Microsoft.Maui.Controls
 					if (!_bindableResources.Contains(bindableObject))
 						_bindableResources.Add(bindableObject);
 					SetInheritedBindingContext(bindableObject, BindingContext);
+				}
+			}
+
+			// Notify child BindableObjects about resource changes
+			if (_childBindableObjects != null)
+			{
+				foreach (KeyValuePair<string, object> value in values)
+				{
+					for (int i = _childBindableObjects.Count - 1; i >= 0; i--)
+					{
+						var target = _childBindableObjects[i].Target as BindableObject;
+						if (target == null)
+						{
+							// Clean up dead references
+							_childBindableObjects.RemoveAt(i);
+							continue;
+						}
+						
+						// Notify the child BindableObject about the resource change
+						target.OnParentResourceChanged(value.Key, value.Value);
+					}
 				}
 			}
 		}

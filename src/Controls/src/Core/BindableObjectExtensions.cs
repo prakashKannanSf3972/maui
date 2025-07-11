@@ -180,9 +180,19 @@ namespace Microsoft.Maui.Controls
 
 			if (oldValue is Element oldView)
 				owner.RemoveLogicalChild(oldView);
+			else if (oldValue is BindableObject oldBindable)
+			{
+				oldBindable.SetLogicalParent(null);
+				owner.RemoveChildBindableObject(oldBindable);
+			}
 
 			if (newValue is Element newView)
 				owner.AddLogicalChild(newView);
+			else if (newValue is BindableObject newBindable)
+			{
+				newBindable.SetLogicalParent(owner);
+				owner.AddChildBindableObject(newBindable);
+			}
 		}
 
 		internal static bool TrySetAppTheme(
