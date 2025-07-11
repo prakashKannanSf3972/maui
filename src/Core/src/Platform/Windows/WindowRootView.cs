@@ -32,6 +32,7 @@ namespace Microsoft.Maui.Platform
 		MauiToolbar? _toolbar;
 		MenuBar? _menuBar;
 		ITitleBar? _titleBar;
+		WeakReference<IView?> _iTitleBarRef = new WeakReference<IView?>(null);
 		FrameworkElement? _appTitleBar;
 		bool _hasTitleBarImage;
 		ViewManagement.UISettings _viewSettings;
@@ -42,6 +43,14 @@ namespace Microsoft.Maui.Platform
 			IsTabStop = false;
 			PassthroughTitlebarElements = new List<FrameworkElement>();
 			_viewSettings = new ViewManagement.UISettings();
+			RegisterThemeChangedHandlers();
+			Unloaded += OnWindowRootViewUnloaded;
+		}
+
+		private void OnWindowRootViewUnloaded(object sender, RoutedEventArgs e)
+		{
+			UnregisterThemeChangedHandlers();
+			Unloaded -= OnWindowRootViewUnloaded;
 		}
 
 		internal double AppTitleBarActualHeight => AppTitleBarContentControl?.ActualHeight ?? 0;
@@ -161,6 +170,9 @@ namespace Microsoft.Maui.Platform
 			OnApplyTemplateFinished?.Invoke(this, EventArgs.Empty);
 
 			UpdateAppTitleBarMargins();
+
+			// Update the title bar if needed based on the current theme
+			UpdateTitleBarOnThemeChange();
 		}
 
 		void OnAppTitleBarContainerLoaded(object sender, RoutedEventArgs e)
@@ -444,6 +456,9 @@ namespace Microsoft.Maui.Platform
 
 			_titleBar = titlebar;
 
+			// Update the weak reference to track the TitleBar's IView
+			_iTitleBarRef = new WeakReference<IView?>(_titleBar);
+
 			if (_titleBar is null || mauiContext is null)
 			{
 				UpdateBackgroundColorForButtons();
@@ -505,9 +520,14 @@ namespace Microsoft.Maui.Platform
 			{
 				SetTitleBarInputElements();
 
-				if (e.PropertyName == "BackgroundColor")
+				if (e.PropertyName == "BackgroundColor" || e.PropertyName == "Background")
 				{
 					UpdateBackgroundColorForButtons();
+				}
+				else if (e.PropertyName == "UserAppTheme" || e.PropertyName == "RequestedTheme")
+				{
+					// Theme related property changed, update the TitleBar
+					UpdateTitleBarOnThemeChange();
 				}
 			}
 		}
@@ -523,6 +543,16 @@ namespace Microsoft.Maui.Platform
 				else
 				{
 					NavigationViewControl.ButtonHolderGrid.Background = new SolidColorBrush(UI.Colors.Transparent);
+
+					// If the background is not explicitly set, we should update based on theme
+					if (_titleBar != null && _iTitleBarRef.TryGetTarget(out var titleBarView) && titleBarView != null)
+					{
+						// Only update if there's no explicit background set
+						if (titleBarView.Background == null)
+						{
+							UpdateTitleBarOnThemeChange();
+						}
+					}
 				}
 			}
 		}
