@@ -323,7 +323,11 @@ namespace Microsoft.Maui.Platform
 			OnScrollChanged(scrollX, scrollY, oldScrollX, oldScrollY);
 		}
 
-		internal Func<Graphics.Rect, Graphics.Size>? CrossPlatformArrange { get; set; }
+		internal ICrossPlatformLayout? CrossPlatformLayout
+		{
+			get;
+			set;
+		}
 	}
 
 	internal class MauiHorizontalScrollView : HorizontalScrollView, IScrollBarView
