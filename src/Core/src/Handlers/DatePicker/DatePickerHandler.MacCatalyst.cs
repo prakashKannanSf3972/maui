@@ -26,6 +26,13 @@ namespace Microsoft.Maui.Handlers
 				platformView.Date = dt.ToNSDate();
 			}
 
+			// This else condition is not required since we are already using the default value of today's date (DateTime.Today).
+			// else
+			// {
+			// 	// When Date is null, use today's date for the picker display
+			// 	platformView.Date = DateTime.Today.ToNSDate();
+			// }
+
 			base.ConnectHandler(platformView);
 		}
 
