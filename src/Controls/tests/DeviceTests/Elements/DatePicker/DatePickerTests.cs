@@ -30,22 +30,20 @@ public partial class DatePickerTests : ControlsHandlerTestBase
 		var testDate = new DateTime(2023, 5, 15);
 		var datePicker = new DatePicker();
 
-		await CreateHandlerAndAddToWindow<DatePickerHandler>(datePicker, async handler =>
+		await CreateHandlerAndAddToWindow<DatePickerHandler>(datePicker, handler =>
 		{
 			// Scenario 1: Initial null date should show today's date
 			datePicker.Date = null;
-			await Task.Delay(100);
 
 			// The virtual view Date property should remain null
 			Assert.Null(datePicker.Date);
 
 			// But the platform view should display today's date
 			var nullDateText = GetDisplayedText(handler);
-			Assert.Equal(nullDateText, DateTime.Today.ToString("dd/MM/yy"));
+			Assert.Equal(nullDateText, string.Empty);
 
 			// Scenario 2: Null to specific date transition
 			datePicker.Date = testDate;
-			await Task.Delay(100);
 
 			// The virtual view Date property should now be the test date
 			Assert.Equal(testDate, datePicker.Date);
@@ -56,14 +54,15 @@ public partial class DatePickerTests : ControlsHandlerTestBase
 
 			// Scenario 3: Specific date back to null should revert to today's date
 			datePicker.Date = null;
-			await Task.Delay(100);
 
 			// The virtual view Date property should be null again
 			Assert.Null(datePicker.Date);
 
 			// But the platform view should display today's date again
 			var revertedNullText = GetDisplayedText(handler);
-			Assert.Equal(revertedNullText, DateTime.Today.ToString("dd/MM/yy"));
+			Assert.Equal(revertedNullText, string.Empty);
+
+			return Task.CompletedTask;
 		});
 	}
 

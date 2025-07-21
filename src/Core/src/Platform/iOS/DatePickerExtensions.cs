@@ -54,10 +54,32 @@ public static class DatePickerExtensions
 	{
 		if (picker is not null)
 		{
-			var targetDate = datePicker.Date ?? DateTime.Today;
-			if (picker.Date.ToDateTime() != targetDate)
+			if (datePicker.Date is null)
 			{
-				picker.SetDate(targetDate.ToNSDate(), false);
+				FindAndClearTextField(picker);
+			}
+			else
+			{
+				var targetDate = datePicker.Date.Value;
+				if (picker.Date.ToDateTime() != targetDate)
+				{
+					picker.SetDate(targetDate.ToNSDate(), false);
+					//picker.Date = targetDate.ToNSDate();
+				}
+			}
+		}
+	}
+
+	static void FindAndClearTextField(UIView view)
+	{
+		foreach (var subview in view.Subviews)
+		{
+			foreach (var subview1 in subview.Subviews)
+			{
+				if (subview1 is UITextField textField)
+				{
+					textField.Text = string.Empty;
+				}
 			}
 		}
 	}
