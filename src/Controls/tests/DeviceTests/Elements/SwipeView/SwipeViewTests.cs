@@ -28,6 +28,80 @@ namespace Microsoft.Maui.DeviceTests
 		}
 
 #if !WINDOWS
+		[Fact(DisplayName = "SwipeItemView TapGestureRecognizer Command Executes")]
+		public async Task SwipeItemViewTapGestureRecognizerCommandExecutes()
+		{
+			SetupBuilder();
+
+			bool commandExecuted = false;
+			var command = new Command(() => commandExecuted = true);
+
+			var label = new Label
+			{
+				Text = "Test Label",
+				BackgroundColor = Colors.LightGray,
+				GestureRecognizers =
+				{
+					new TapGestureRecognizer { Command = command }
+				}
+			};
+
+			var swipeItemView = new SwipeItemView
+			{
+				Content = label
+			};
+
+			var swipeItems = new SwipeItems { swipeItemView };
+
+			var swipeView = new SwipeView
+			{
+				RightItems = swipeItems,
+				Content = new Grid
+				{
+					HeightRequest = 60,
+					Background = new SolidPaint(Colors.White)
+				}
+			};
+
+			await CreateHandlerAndAddToWindow<SwipeViewHandler>(swipeView, async (handler) =>
+			{
+				// Verify the swipe item view is created
+				Assert.NotNull(handler.PlatformView);
+
+				// Get the platform view for the SwipeItemView
+				var swipeItemViewHandler = swipeItemView.Handler as SwipeItemViewHandler;
+				Assert.NotNull(swipeItemViewHandler);
+				Assert.NotNull(swipeItemViewHandler.PlatformView);
+
+				// Get the label's platform view and simulate a tap
+				var labelHandler = label.Handler as IViewHandler;
+				Assert.NotNull(labelHandler);
+
+#if ANDROID
+				// On Android, simulate touch
+				var androidView = labelHandler.PlatformView as Android.Views.View;
+				Assert.NotNull(androidView);
+				
+				// Simulate tap gesture
+				var tapGesture = label.GestureRecognizers[0] as TapGestureRecognizer;
+				tapGesture.SendTapped(label);
+#elif IOS || MACCATALYST
+				// On iOS, simulate tap
+				var iOSView = labelHandler.PlatformView as UIKit.UIView;
+				Assert.NotNull(iOSView);
+				
+				// Simulate tap gesture
+				var tapGesture = label.GestureRecognizers[0] as TapGestureRecognizer;
+				tapGesture.SendTapped(label);
+#endif
+
+				// Wait a bit for the command to be processed
+				await Task.Delay(100);
+
+				Assert.True(commandExecuted, "TapGestureRecognizer command should have been executed in SwipeItemView");
+			});
+		}
+
 		[Fact(DisplayName = "SwipeView LogicalChildren Works Correctly")]
 		public async Task SwipeViewLogicalChildren()
 		{
