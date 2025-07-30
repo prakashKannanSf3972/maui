@@ -93,11 +93,11 @@ namespace Microsoft.Maui.Platform
 			if (e?.Action == MotionEventActions.Move && !ShouldInterceptTouch(e))
 				return true;
 
-			bool shouldConsumeEvent = ProcessSwipingInteractions(e);
+			bool shouldProcessSwipe = ProcessSwipingInteractions(e);
 
-			// Only consume the touch event if ProcessSwipingInteractions indicates we should
-			// This allows child SwipeItemView gesture recognizers to work for tap gestures
-			return shouldConsumeEvent;
+			// Only consume the touch event if we're actually swiping or need to handle the swipe
+			// This allows child SwipeItemView gesture recognizers to work for simple taps
+			return shouldProcessSwipe && (_isSwiping || _isOpen);
 		}
 
 		bool ShouldInterceptTouch(MotionEvent? e)
