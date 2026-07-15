@@ -111,7 +111,23 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Android
 					Move(args);
 					break;
 				case NotifyCollectionChangedAction.Reset:
-					_notifier.NotifyDataSetChanged();
+					// If we have headers or footers, avoid NotifyDataSetChanged() to prevent
+					// triggering unnecessary Unloaded events on header/footer controls
+					if (HasHeader || HasFooter)
+					{
+						// For headers/footers, notify changes only for the items portion
+						// This avoids recreating header/footer view holders
+						var itemsOnlyStartIndex = HasHeader ? 1 : 0;
+						var itemsOnlyEndIndex = Count - (HasFooter ? 1 : 0) - 1;
+						if (itemsOnlyEndIndex >= itemsOnlyStartIndex)
+						{
+							_notifier.NotifyItemRangeChanged(this, itemsOnlyStartIndex, itemsOnlyEndIndex - itemsOnlyStartIndex + 1);
+						}
+					}
+					else
+					{
+						_notifier.NotifyDataSetChanged();
+					}
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();
@@ -157,8 +173,23 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Android
 			if (startIndex < 0)
 			{
 				// INCC implementation isn't giving us enough information to know where the removed items were in the
-				// collection. So the best we can do is a NotifyDataSetChanged()
-				_notifier.NotifyDataSetChanged();
+				// collection. If we have headers or footers, avoid NotifyDataSetChanged() to prevent
+				// triggering unnecessary Unloaded events on header/footer controls
+				if (HasHeader || HasFooter)
+				{
+					// For headers/footers, we need to notify range changes for the items portion only
+					// This avoids recreating header/footer view holders
+					var itemsOnlyStartIndex = HasHeader ? 1 : 0;
+					var itemsOnlyEndIndex = Count - (HasFooter ? 1 : 0) - 1;
+					if (itemsOnlyEndIndex >= itemsOnlyStartIndex)
+					{
+						_notifier.NotifyItemRangeChanged(this, itemsOnlyStartIndex, itemsOnlyEndIndex - itemsOnlyStartIndex + 1);
+					}
+				}
+				else
+				{
+					_notifier.NotifyDataSetChanged();
+				}
 				return;
 			}
 
@@ -199,8 +230,24 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Android
 			}
 
 			// The original and replacement sets are of unequal size; this means that everything currently in view will 
-			// have to be updated. So we just have to use NotifyDataSetChanged and let the RecyclerView update everything
-			_notifier.NotifyDataSetChanged();
+			// have to be updated. If we have headers or footers, avoid NotifyDataSetChanged() to prevent
+			// triggering unnecessary Unloaded events on header/footer controls
+			if (HasHeader || HasFooter)
+			{
+				// For headers/footers, notify changes only for the items portion
+				// This avoids recreating header/footer view holders
+				var itemsOnlyStartIndex = HasHeader ? 1 : 0;
+				var itemsOnlyEndIndex = Count - (HasFooter ? 1 : 0) - 1;
+				if (itemsOnlyEndIndex >= itemsOnlyStartIndex)
+				{
+					_notifier.NotifyItemRangeChanged(this, itemsOnlyStartIndex, itemsOnlyEndIndex - itemsOnlyStartIndex + 1);
+				}
+			}
+			else
+			{
+				// No headers/footers, safe to use NotifyDataSetChanged
+				_notifier.NotifyDataSetChanged();
+			}
 		}
 
 		internal int ItemsCount()
